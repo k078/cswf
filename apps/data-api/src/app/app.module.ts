@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-
+import { VerzamelingModule } from '@cswf/backend/features';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-  imports: [],
+  imports: [VerzamelingModule],
   controllers: [AppController],
   providers: [AppService],
 })
