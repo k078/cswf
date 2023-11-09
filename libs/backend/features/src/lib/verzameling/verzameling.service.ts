@@ -60,8 +60,8 @@ export class VerzamelingService {
     const current = this.Verzamelingen$.value;
     // Use the incoming data, a randomized ID, and a default value of `false` to create the new to-do
     const newVerzameling: IVerzameling = {
-      ...Verzameling,
       id: this.Verzamelingen$.value.length+1,
+      ...Verzameling,
     };
     this.Verzamelingen$.next([...current, newVerzameling]);
     return newVerzameling;
