@@ -1,0 +1,5 @@
+<div *ngFor="let verzameling of verzamelingen">
+  <h2>{{ verzameling.naam }}</h2>
+  <p>Informatie: {{ verzameling.info }}</p>
+  <p>Oprichting: {{ verzameling.oprichting | date:'short' }}</p>
+</div>
