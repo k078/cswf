@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'cswf-verzameling-list',
-    templateUrl: './Verzameling-list.component.html',
-    styleUrls: ['./Verzameling-list.component.css'],
+    templateUrl: './verzameling-list.component.html',
+    styleUrls: ['./verzameling-list.component.css'],
 })
 export class VerzamelingListComponent implements OnInit, OnDestroy {
     verzamelingen: IVerzameling[] | null = null;
