@@ -28,9 +28,9 @@ jobs:
       - name: npm install, build, and test
         run: |
           npm install
-          npm nx build frontend
-          npm nx build data-api
-          npm nx build rcmnd-api
+          nx build frontend
+          nx build data-api
+          nx build rcmnd-api
 
       - name: Zip artifacts for deployment
         run: |
