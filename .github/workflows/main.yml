@@ -33,13 +33,13 @@ jobs:
           cd ${GITHUB_WORKSPACE}/dist/apps/data-api/ && zip ${GITHUB_WORKSPACE}/data-api-release.zip ./* -r
           cd ${GITHUB_WORKSPACE}/dist/apps/frontend/ && zip ${GITHUB_WORKSPACE}/frontend-release.zip ./* -r
 
-      - name: Upload frontend-app artifact for deployment job
+      - name: Upload frontend artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: frontend
           path: frontend-release.zip
           
-      - name: Upload backend-api artifact for deployment job
+      - name: Upload data-api artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: data-api
@@ -73,7 +73,7 @@ jobs:
           output_location: "" # Built app content directory - optional
 
 
-  deploy-backend-api:
+  deploy-data-api:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -84,7 +84,7 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
-          name: dara-api
+          name: data-api
 
       - name: Unzip artifact for deployment
         run: unzip data-api-release.zip
