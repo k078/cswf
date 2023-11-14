@@ -14,7 +14,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   const corsOptions = {
-    origin: 'https://mango-river-03c376a03.4.azurestaticapps.net/', // Of specificeer het specifieke domein van je frontend.
+    origin: '*', // Of specificeer het specifieke domein van je frontend.
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   };
