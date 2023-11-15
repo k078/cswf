@@ -7,6 +7,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ApiResponseInterceptor } from '@cswf/backend/dto';
 import { AppModule } from './app/app.module';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +20,8 @@ async function bootstrap() {
     credentials: true,
   };
   app.enableCors(corsOptions);
-
+  
+  app.useGlobalPipes(new ValidationPipe());
 
   app.useGlobalInterceptors(new ApiResponseInterceptor());
 

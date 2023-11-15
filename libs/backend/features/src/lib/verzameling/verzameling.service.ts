@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IVerzameling } from '@cswf/shared/api';
+import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
 import { BehaviorSubject } from 'rxjs';
 import { Logger } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
+import { ValidationError } from 'class-validator';
+
 
 @Injectable()
 export class VerzamelingService {
@@ -12,21 +17,21 @@ export class VerzamelingService {
       id: 0,
       naam: 'Doos 1',
       eigenaar: 'Kalle',
-      oprichting: new Date('2021-01-01'),
       info: 'Doos 1 met wat platen erin',
+      oprichting: new Date('2021-01-01'),
     },
     {
       id: 1,
       naam: 'Doos 2',
       eigenaar: 'Kalle',
-      oprichting: new Date('2021-01-01'),
       info: 'Doos 2 met wat platen erin',
+      oprichting: new Date('2021-01-01'),
     },
   ]);
 
   getAll(): IVerzameling[] {
     Logger.log('getAll', this.TAG);
-    return this.Verzamelingen$.value;
+    return this.Verzamelingen$.value.sort((a, b) => a.id - b.id);
   }
 
   getOne(id: number): IVerzameling {
@@ -48,22 +53,80 @@ export class VerzamelingService {
 
 
 
-  /**
-   * Update the arg signature to match the DTO, but keep the
-   * return signature - we still want to respond with the complete
-   * object
-   */
-  create(
-    Verzameling: Pick<IVerzameling, 'naam' | 'eigenaar' | 'oprichting' | 'info'>
-  ): IVerzameling {
+
+  create(verzamelingDto: Pick<IVerzameling, 'naam' | 'eigenaar' | 'info'>): IVerzameling {
     Logger.log('create', this.TAG);
-    const current = this.Verzamelingen$.value;
-    // Use the incoming data, a randomized ID, and a default value of `false` to create the new to-do
-    const newVerzameling: IVerzameling = {
-      id: this.Verzamelingen$.value.length+1,
-      ...Verzameling,
-    };
-    this.Verzamelingen$.next([...current, newVerzameling]);
-    return newVerzameling;
+    Logger.log('Received data:', verzamelingDto);
+
+    try {
+      // Maak een nieuw IVerzameling object zonder het 'id' veld
+
+
+      const currentVerzamelingen = this.Verzamelingen$.value;
+      const verzamelingObject: IVerzameling = {
+        // Of een andere logica om een nieuw id te genereren
+         id: this.Verzamelingen$.value.length,
+         naam: verzamelingDto.naam,
+         eigenaar: verzamelingDto.eigenaar,
+         info: verzamelingDto.info,
+         oprichting: new Date(),
+       };
+
+      this.Verzamelingen$.next([...currentVerzamelingen, verzamelingObject]);
+      return verzamelingObject;
+    } catch (errors) {
+      // Als er validatiefouten optreden, behandel ze hier
+      if (errors instanceof Array && errors.length > 0 && errors[0] instanceof ValidationError) {
+        throw new BadRequestException(errors[0].toString());
+      } else {
+        throw errors;
+      }
+    }
   }
+
+
+
+  delete(id: number): IVerzameling {
+    Logger.log('delete', this.TAG);
+    const current = this.Verzamelingen$.value;
+    const VerzamelingToDelete = this.getOne(id);
+    this.Verzamelingen$.next([
+      ...current.filter((Verzameling) => Verzameling.id !== VerzamelingToDelete.id),
+    ]);
+    return VerzamelingToDelete;
+  }
+
+  update(id: number, verzamelingDto: Pick<IVerzameling, 'naam' | 'eigenaar' | 'info'>): IVerzameling {
+    Logger.log('update', this.TAG);
+    Logger.log('Received data:', verzamelingDto);
+
+    try {
+      const currentVerzamelingen = this.Verzamelingen$.value;
+      const verzamelingToUpdate = this.getOne(id);
+
+      // Update alleen de velden die zijn opgegeven in de verzamelingDto
+      const updatedVerzameling: IVerzameling = {
+        id: verzamelingToUpdate.id,
+        naam: verzamelingDto.naam || verzamelingToUpdate.naam,
+        eigenaar: verzamelingDto.eigenaar || verzamelingToUpdate.eigenaar,
+        info: verzamelingDto.info || verzamelingToUpdate.info,
+        oprichting: verzamelingToUpdate.oprichting, // Bijwerken van de oprichtingsdatum (of andere logica)
+      };
+
+      this.Verzamelingen$.next([
+        ...currentVerzamelingen.filter((v) => v.id !== verzamelingToUpdate.id),
+        updatedVerzameling,
+      ]);
+
+      return updatedVerzameling;
+    } catch (errors) {
+      // Als er validatiefouten optreden, behandel ze hier
+      if (errors instanceof Array && errors.length > 0 && errors[0] instanceof ValidationError) {
+        throw new BadRequestException(errors[0].toString());
+      } else {
+        throw errors;
+      }
+    }
+  }
+
 }

@@ -2,7 +2,6 @@ import {
   IsNotEmpty,
   IsString,
   IsNumber,
-  IsOptional,
   IsDate,
 } from 'class-validator';
 import {
@@ -11,37 +10,35 @@ import {
   IUpsertVerzameling,
 } from '@cswf/shared/api';
 
-export class CreateVerzamelingDto implements ICreateVerzameling{
+export class CreateVerzamelingDto implements ICreateVerzameling {
   @IsString()
   @IsNotEmpty()
   naam!: string;
 
+  @IsString()
   @IsNotEmpty()
   eigenaar!: string;
 
-  @IsDate()
-  @IsNotEmpty()
-  oprichting!: Date;
-
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   info!: string;
 }
 
 export class UpdateVerzamelingDto implements IUpdateVerzameling{
   @IsString()
-  @IsOptional()
   @IsNotEmpty()
   naam?: string;
 
   @IsNotEmpty()
-  @IsOptional()
   eigenaar?: string;
 
   @IsNotEmpty()
   @IsDate()
-  @IsOptional()
   oprichting?: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  info?: string;
 }
 
 export class UpsertVerzamelingDto implements IUpsertVerzameling{

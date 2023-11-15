@@ -10,6 +10,6 @@ export interface IVerzameling {
     info:string;
 }
 
-export type ICreateVerzameling = Pick<IVerzameling, 'naam' | 'eigenaar' | 'oprichting'>;
+export type ICreateVerzameling = Pick<IVerzameling, 'naam' | 'eigenaar' | 'info'>;
 export type IUpdateVerzameling = Partial<Omit<IVerzameling, 'id'>>;
 export type IUpsertVerzameling=IVerzameling;

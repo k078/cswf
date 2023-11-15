@@ -1,8 +1,8 @@
-import { Controller, Logger } from '@nestjs/common';
+import { Controller, Delete, Logger, Put } from '@nestjs/common';
 import { VerzamelingService } from './verzameling.service';
 import { Get, Param, Post, Body } from '@nestjs/common';
 import { IVerzameling } from '@cswf/shared/api';
-import { CreateVerzamelingDto } from '@cswf/backend/dto';
+import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
 
 @Controller('Verzameling')
 export class VerzamelingController {
@@ -20,7 +20,23 @@ export class VerzamelingController {
 
 
     @Post('')
-    create(@Body() data: CreateVerzamelingDto): IVerzameling {
+    create(@Body() data: CreateVerzamelingDto): IVerzameling{
+        console.log('Received data:', data);
         return this.VerzamelingService.create(data);
     }
+
+    @Delete(':id')
+    delete(@Param('id') id: number): IVerzameling {
+        return this.VerzamelingService.delete(id);
+    }
+
+    @Put(':id')
+    update(
+        @Param('id') id: number,
+        @Body() data: CreateVerzamelingDto
+    ):IVerzameling{
+        return this.VerzamelingService.update(id, data);
+    }
 }
+
+
