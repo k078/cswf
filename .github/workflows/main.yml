@@ -46,7 +46,7 @@ jobs:
           path: data-api-release.zip
           
           
-  deploy-frontend-app:
+  deploy-frontend:
     runs-on: ubuntu-latest
     needs: build
     environment:
@@ -73,7 +73,7 @@ jobs:
           output_location: "" # Built app content directory - optional
 
 
-  deploy-backend-api:
+  deploy-data-api:
     runs-on: ubuntu-latest
     needs: build
     environment:
