@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "deploy": "nx run frontend:build",
-     "build": "nx run-many -t build",
-     "test": "nx run-many -t test"
- },
+    "deploy-frontend": "nx run frontend:build",
+    "deploy-backend": "nx run data-api:build",
+    "build": "nx run-many -t build",
+    "test": "nx run-many -t test"
+  },
+
  "private": true,
   "dependencies": {
     "@angular/animations": "~16.2.0",
