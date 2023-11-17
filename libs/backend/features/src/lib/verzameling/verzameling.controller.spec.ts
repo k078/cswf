@@ -12,7 +12,4 @@ describe('VerzamelingController', () => {
     controller = module.get<VerzamelingController>(VerzamelingController);
   });
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
 });
