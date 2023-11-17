@@ -1,8 +1,8 @@
-import { Controller, Delete, Logger, Put } from '@nestjs/common';
+import { Controller, Delete, Put } from '@nestjs/common';
 import { VerzamelingService } from './verzameling.service';
 import { Get, Param, Post, Body } from '@nestjs/common';
 import { IVerzameling } from '@cswf/shared/api';
-import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
+import { CreateVerzamelingDto } from '@cswf/backend/dto';
 
 @Controller('Verzameling')
 export class VerzamelingController {
