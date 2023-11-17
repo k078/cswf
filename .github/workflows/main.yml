@@ -30,8 +30,8 @@ jobs:
       - name: Zip artifacts for deployment
         run: |
           echo ${GITHUB_WORKSPACE}
-          cd ${GITHUB_WORKSPACE}/dist/apps/data-api/ && zip ${GITHUB_WORKSPACE}/data-api-release.zip ./* -r
-          cd ${GITHUB_WORKSPACE}/dist/apps/frontend/ && zip ${GITHUB_WORKSPACE}/frontend-release.zip ./* -r
+          cd home/runner/work/cswf/dist/apps/data-api/ && zip ${GITHUB_WORKSPACE}/data-api-release.zip ./* -r
+          cd home/runner/work/cswf/dist/apps/frontend/ && zip ${GITHUB_WORKSPACE}/frontend-release.zip ./* -r
 
       - name: Upload frontend-app artifact for deployment job
         uses: actions/upload-artifact@v3
