@@ -1,5 +1,16 @@
-<div *ngFor="let verzameling of verzamelingen">
-  <h2>{{ verzameling.naam }}</h2>
-  <p>Informatie: {{ verzameling.info }}</p>
-  <p>Oprichting: {{ verzameling.oprichting | date:'short' }}</p>
-</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Naam</th>
+      <th>Eigenaar</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let verzameling of verzamelingen">
+      <td>{{ verzameling.id }}</td>
+      <td>{{ verzameling.naam }}</td>
+      <td>{{ verzameling.eigenaar }}</td>
+    </tr>
+  </tbody>
+</table>
