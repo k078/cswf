@@ -1,0 +1,12 @@
+<form [formGroup]="verzamelingForm">
+  <label for="naam">Naam:</label>
+  <input type="text" class="form-control" id="naam" formControlName="naam">
+  <label for="eigenaar">Eigenaar:</label>
+  <input type="text" class="form-control" id="eigenaar" formControlName="eigenaar">
+  <label for="info">Informatie:</label>
+  <input type="text" class="form-control" id="info" formControlName="info">
+  <br>
+  <button type="submit" (click)="onSubmit()" class="btn btn-primary">Opslaan</button>
+</form>
+
+

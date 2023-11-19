@@ -1,9 +1,12 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>ID</th>
+      <th><a (click)="sortOpId()">ID</a></th>
       <th>Naam</th>
-      <th>Eigenaar</th>
+      <th><a (click)="sortOpEigenaar()">Eigenaar</a></th>
+      <th>Info</th>
+      <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -11,6 +14,9 @@
       <td>{{ verzameling.id }}</td>
       <td>{{ verzameling.naam }}</td>
       <td>{{ verzameling.eigenaar }}</td>
+      <td><a [routerLink]="['/verzameling', verzameling.id]">Bekijk</a></td>
+      <td><button (click)="verwijderVerzameling(verzameling.id)">Verwijder</button></td>
+      <td><button [routerLink]="['updateverzameling/', verzameling.id]">Aanpassen</button></td>
     </tr>
   </tbody>
 </table>

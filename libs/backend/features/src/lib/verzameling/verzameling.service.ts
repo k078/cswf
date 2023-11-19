@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IVerzameling } from '@cswf/shared/api';
 import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, race } from 'rxjs';
 import { Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
@@ -14,17 +14,38 @@ export class VerzamelingService {
 
   private Verzamelingen$ = new BehaviorSubject<IVerzameling[]>([
     {
-      id: 0,
-      naam: 'Doos 1',
+      id: 1,
+      naam: 'LPs van Kalle',
       eigenaar: 'Kalle',
-      info: 'Doos 1 met wat platen erin',
+      info: 'Een kartonnen doos met wat LPs erin',
       oprichting: new Date('2021-01-01'),
     },
     {
-      id: 1,
-      naam: 'Doos 2',
+      id: 2,
+      naam: 'Platendoos zolder',
+      eigenaar: 'Sten',
+      info: 'Doos met wat platen erin',
+      oprichting: new Date('2021-01-01'),
+    },
+    {
+      id: 3,
+      naam: 'Meer LPs van Kalle',
       eigenaar: 'Kalle',
-      info: 'Doos 2 met wat platen erin',
+      info: 'Tweede verzameling met wat platen erin',
+      oprichting: new Date('2021-01-01'),
+    },
+    {
+      id: 4,
+      naam: 'LPs van vader',
+      eigenaar: 'Kalle',
+      info: 'Doos van vader met platen van vroeger',
+      oprichting: new Date('2021-01-01'),
+    },
+    {
+      id: 5,
+      naam: 'Verzameling Sten',
+      eigenaar: 'Sten',
+      info: 'Verzameling nieuwe platen van Sten',
       oprichting: new Date('2021-01-01'),
     },
   ]);
@@ -61,11 +82,11 @@ export class VerzamelingService {
     try {
       // Maak een nieuw IVerzameling object zonder het 'id' veld
 
-
+      const randId = Math.floor(Math.random() * 1000);
       const currentVerzamelingen = this.Verzamelingen$.value;
       const verzamelingObject: IVerzameling = {
         // Of een andere logica om een nieuw id te genereren
-         id: this.Verzamelingen$.value.length,
+         id: randId,
          naam: verzamelingDto.naam,
          eigenaar: verzamelingDto.eigenaar,
          info: verzamelingDto.info,

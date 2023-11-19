@@ -1,0 +1,142 @@
+<div class="container">
+  <div class="row justify-content-center align-items-center"> <!-- Center content horizontally and vertically -->
+    <div class="col-sm-6 col-md-8 col-lg-9">
+      <div>
+            <h1 class=>Kalle van de Visser</h1>
+            <p>Studentnummer: 2177927</p>
+      </div>
+      <h1 id="aboutTitle">iVinyl</h1>
+      <p>
+        Deze applicatie is ontwikkeld voor het vak CSWPI vak
+      </p>
+      <p>
+        iVinyl is een applicatie waarin in je een verzameling van vinyl platen kan bijhouden. Je kan als gebruiker een verzameling aanmaken waaraan je platen kunt toevoegen en verwijderen.
+        Daarnaast kun je ook de verzameling verwijderen of aanpassen om eventuele info te veranderen.
+      </p>
+    </div>
+  </div>
+
+  <h3>ERD</h3>
+  <img src="assets/iVinylERD.png" class="px-4 py-4" alt="ERD" />
+
+  <h3>Entiteiten</h3>
+  <div class="row">
+    <div class="col-sm-12 col-md-4">
+      <p>Label</p>
+      <ul>
+        <li>naam: string</li>
+        <li>oprichting: DateTime</li>
+        <li>land: string</li>
+        <li>genre: Genre</li>
+      </ul>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <p>Artiest</p>
+      <ul>
+        <li>naam: string</li>
+        <li>leeftijd: int</li>
+        <li>land: string</li>
+        <li>bio: string</li>
+      </ul>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <p>Genre</p>
+      <ul>
+        <li>House, Trance, Rock, Pop</li>
+      </ul>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <p>Gebruiker</p>
+      <ul>
+        <li>gebruikersnaam: string</li>
+        <li>wachtwoord: number</li>
+        <li>geboorteDatum: string</li>
+      </ul>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <p>Verzameling</p>
+      <ul>
+        <li>eigenaar: Gebruiker</li>
+        <li>oprichting: DateTime</li>
+        <li>info: string</li>
+      </ul>
+    </div>
+    <div class="col-sm-12 col-md-4">
+      <p>LP</p>
+      <ul>
+        <li>titel: string</li>
+        <li>artiest: Artiest</li>
+        <li>release: int</li>
+        <li>genre: Genre</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h2>Userstories</h2>
+      <table class="table table-bordered">
+        <thead>
+          <th class="th-css">Nr</th>
+          <th class="col-6">Userstory</th>
+        </thead>
+              <tbody>
+                  <tr>
+                      <td class="td-css">1.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik een verzameling kunnen aanmaken zodat ik mijn platen kan bijhouden.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">2.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik een verzameling kunnen verwijderen zodat ik mijn verzameling kan verwijderen bij een eventuele fout.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">3.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik een verzameling kunnen aanpassen zodat ik mijn verzameling kan aanpassen bij een eventuele fout of toevoeging.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">4.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik een plaat kunnen toevoegen aan mijn verzameling zodat ik mijn verzameling kan uitbreiden.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">5.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik een plaat kunnen verwijderen uit mijn verzameling zodat ik mijn verzameling kan aanpassen.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">6.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik kunnen filteren zodat ik sneller platen vind die ik zoek.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">7.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik informatie kunnen zien over een artiest zodat ik meer te weten kom over de artiest.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">8.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik informatie kunnen zien over een label zodat ik meer te weten kom over het label.
+                      </td>
+                  </tr>
+                  <tr>
+                      <td class="td-css">9.</td>
+                      <td class="td-underlined">
+                          Als gebruiker wil ik informatie kunnen zien over een plaat zodat ik meer te weten kom over de LP.
+                      </td>
+              </tbody>
+          </table>
+      </div>
+  </div>
+</div>
+

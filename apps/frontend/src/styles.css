@@ -3,3 +3,7 @@
 body {
   background-color: ghostwhite !important; /* Zou de achtergrondkleur van het lichaam moeten veranderen naar rood */
 }
+
+.containter{
+  margin: 0 auto;
+}
