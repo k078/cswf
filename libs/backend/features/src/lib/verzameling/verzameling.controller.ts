@@ -20,7 +20,7 @@ export class VerzamelingController {
 
 
     @Post('')
-    create(@Body() data: CreateVerzamelingDto): IVerzameling{
+    create(@Body() data: IVerzameling): IVerzameling{
         console.log('Received data:', data);
         return this.VerzamelingService.create(data);
     }
@@ -33,7 +33,7 @@ export class VerzamelingController {
     @Put(':id')
     update(
         @Param('id') id: number,
-        @Body() data: CreateVerzamelingDto
+        @Body() data: IVerzameling
     ):IVerzameling{
         return this.VerzamelingService.update(id, data);
     }

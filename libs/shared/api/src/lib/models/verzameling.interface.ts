@@ -1,3 +1,4 @@
+import { IGebruiker } from './gebruiker.interface';
 import { Id } from './id.type';
 
 type User = string;
@@ -5,7 +6,7 @@ type User = string;
 export interface IVerzameling {
     id:Id;
     naam:string;
-    eigenaar:User;
+    eigenaar:IGebruiker;
     oprichting:Date;
     info:string;
 }
