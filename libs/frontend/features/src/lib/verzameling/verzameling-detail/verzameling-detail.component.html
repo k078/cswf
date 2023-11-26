@@ -1,19 +1,55 @@
 <div class="container" *ngIf="verzameling">
   <h1>Verzameling info</h1>
   <div class="info">
-    <ul>Id: {{verzameling.id}}</ul>
-    <ul>Naam: {{verzameling.naam}}</ul>
-    <ul>Eigenaar: {{verzameling.eigenaar}}</ul>
-    <ul>Oprichting: {{verzameling.oprichting | date:'yyyy-MM-dd'}}</ul>
-    <ul>Info: {{verzameling.info}}</ul>
-    <ul>LP's:
-
-      <div *ngFor="let lp of lps">
-        <div>
-          <ul>Titel: {{lp.titel}}</ul>
-          <img class="image" [src]="lp.img">
-        </div>
+    <div class="details">
+      <div class="detail">
+        <span class="label">ID:</span>
+        <span class="value">{{ verzameling.id }}</span>
       </div>
-    </ul>
+      <div class="detail">
+        <span class="label">Naam:</span>
+        <span class="value">{{ verzameling.naam }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Eigenaar:</span>
+        <span class="value">{{ verzameling.eigenaar }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Oprichting:</span>
+        <span class="value">{{ verzameling.oprichting | date : 'yyyy-MM-dd' }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Info:</span>
+        <span class="value">{{ verzameling.info }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="info">
+      <div *ngFor="let lp of lps">
+        <div class="card">
+          <div class="card-header">
+            <img class="card-img-top rounded-circle" [src]="lp.img" alt="{{ lp.titel }}">
+          </div>
+          <div class="card-body">
+            <h6 class="card-title">{{ lp.titel }}</h6>
+            <p class="card-text">{{ lp.artiest }}</p>
+            <p class="card-text">{{ lp.genre }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <a [routerLink]="['/lp', lp.id]" class="btn btn-sm btn-outline-primary">Bekijk</a>
+              </div>
+              <small class="text-muted">{{ lp.id }}</small>
+            </div>
+          </div>
+        </div>
+        </div>
+  </div>
+  <div class="buttons">
+    <button
+      [routerLink]="['/updateverzameling/', verzameling.id]"
+      class="btn btn-primary"
+    >
+      Aanpassen
+    </button>
   </div>
 </div>
