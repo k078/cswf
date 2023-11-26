@@ -1,9 +1,6 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 
 body {
-  background-color: ghostwhite !important; /* Zou de achtergrondkleur van het lichaam moeten veranderen naar rood */
+  background-color: #d6d6d6; /* Zou de achtergrondkleur van het lichaam moeten veranderen naar rood */
 }
 
-.containter{
-  margin: 0 auto;
-}

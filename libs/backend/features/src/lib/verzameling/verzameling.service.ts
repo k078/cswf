@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { IVerzameling } from '@cswf/shared/api';
-import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
 import { BehaviorSubject, race } from 'rxjs';
 import { Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
@@ -19,6 +18,7 @@ export class VerzamelingService {
       eigenaar: 'Kalle',
       info: 'Een kartonnen doos met wat LPs erin',
       oprichting: new Date('2021-01-01'),
+      lps: [1, 2],
     },
     {
       id: 2,
@@ -26,6 +26,7 @@ export class VerzamelingService {
       eigenaar: 'Sten',
       info: 'Doos met wat platen erin',
       oprichting: new Date('2021-01-01'),
+      lps: [2],
     },
     {
       id: 3,
@@ -33,6 +34,7 @@ export class VerzamelingService {
       eigenaar: 'Kalle',
       info: 'Tweede verzameling met wat platen erin',
       oprichting: new Date('2021-01-01'),
+      lps: [],
     },
     {
       id: 4,
@@ -40,6 +42,7 @@ export class VerzamelingService {
       eigenaar: 'Kalle',
       info: 'Doos van vader met platen van vroeger',
       oprichting: new Date('2021-01-01'),
+      lps: [1, 2, 3],
     },
     {
       id: 5,
@@ -47,6 +50,7 @@ export class VerzamelingService {
       eigenaar: 'Sten',
       info: 'Verzameling nieuwe platen van Sten',
       oprichting: new Date('2021-01-01'),
+      lps: [3],
     },
   ]);
 
@@ -91,6 +95,7 @@ export class VerzamelingService {
          eigenaar: verzamelingDto.eigenaar,
          info: verzamelingDto.info,
          oprichting: new Date(),
+         lps: []
        };
 
       this.Verzamelingen$.next([...currentVerzamelingen, verzamelingObject]);
@@ -131,7 +136,8 @@ export class VerzamelingService {
         naam: verzamelingDto.naam || verzamelingToUpdate.naam,
         eigenaar: verzamelingDto.eigenaar || verzamelingToUpdate.eigenaar,
         info: verzamelingDto.info || verzamelingToUpdate.info,
-        oprichting: verzamelingToUpdate.oprichting, // Bijwerken van de oprichtingsdatum (of andere logica)
+        oprichting: verzamelingToUpdate.oprichting,
+        lps: verzamelingToUpdate.lps,
       };
 
       this.Verzamelingen$.next([

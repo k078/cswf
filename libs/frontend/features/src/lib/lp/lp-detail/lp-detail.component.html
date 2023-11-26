@@ -1,0 +1,41 @@
+<div class="container" *ngIf="lp">
+  <h1 class="header">LP Informatie</h1>
+  <div class="info">
+    <div class="details">
+      <div class="detail">
+        <span class="label">ID:</span>
+        <span class="value">{{ lp.id }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Titel:</span>
+        <span class="value">{{ lp.titel }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Artiest:</span>
+        <span class="value">{{ lp.artiest }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Release:</span>
+        <span class="value">{{ lp.release | date:'yyyy-MM-dd' }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Land:</span>
+        <span class="value">{{ lp.land }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Label:</span>
+        <span class="value">{{ lp.label }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Genre:</span>
+        <span class="value">{{ lp.genre }}</span>
+      </div>
+    </div>
+    <div class="image-container">
+      <img class="lp-image" [src]="lp.img" alt="{{ lp.titel }}">
+    </div>
+
+  </div>
+  <div class="buttons">
+    <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary">Aanpassen</button>
+</div>

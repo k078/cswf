@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { VerzamelingService } from '../verzameling.service';
-import { IVerzameling } from '@cswf/shared/api';
+import { ILp, IVerzameling } from '@cswf/shared/api';
 import { ActivatedRoute } from '@angular/router';
+import { LpService } from '../../lp/lp.service';
 
 @Component({
   selector: 'cswf-verzameling-detail',
@@ -10,10 +11,12 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class VerzamelingDetailComponent implements OnInit {
   verzameling: IVerzameling | null = null;
+  lps: ILp[] | undefined;
 
   constructor(
     private route: ActivatedRoute,
-    private VerzamelingService: VerzamelingService
+    private VerzamelingService: VerzamelingService,
+    private LpService: LpService
   ) {}
 
   ngOnInit(): void {
@@ -22,9 +25,17 @@ export class VerzamelingDetailComponent implements OnInit {
       if (id) {
         this.VerzamelingService.read(id).subscribe((verzameling) => {
           this.verzameling = verzameling;
+          this.loadLps();
         });
       }
     });
+  }
+  loadLps(): void {
+    if (this.verzameling) {
+      this.LpService.list().subscribe((lps) => {
+        this.lps = lps?.filter((lp) => this.verzameling!.lps.includes(lp.id));
+      });
+    }
   }
 
   verwijderVerzameling(id: number): void {

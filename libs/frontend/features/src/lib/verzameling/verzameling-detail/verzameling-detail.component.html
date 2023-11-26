@@ -6,5 +6,14 @@
     <ul>Eigenaar: {{verzameling.eigenaar}}</ul>
     <ul>Oprichting: {{verzameling.oprichting | date:'yyyy-MM-dd'}}</ul>
     <ul>Info: {{verzameling.info}}</ul>
+    <ul>LP's:
+
+      <div *ngFor="let lp of lps">
+        <div>
+          <ul>Titel: {{lp.titel}}</ul>
+          <img class="image" [src]="lp.img">
+        </div>
+      </div>
+    </ul>
   </div>
 </div>

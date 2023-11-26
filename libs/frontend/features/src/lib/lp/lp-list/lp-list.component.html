@@ -1,0 +1,29 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-4" *ngFor="let lp of lps">
+      <div class="card">
+        <div class="card-header">
+          <img class="card-img-top rounded-circle" [src]="lp.img" alt="{{ lp.titel }}">
+        </div>
+        <div class="card-body">
+          <h6 class="card-title">{{ lp.titel }}</h6>
+          <p class="card-text">{{ lp.artiest }}</p>
+          <p class="card-text">{{ lp.genre }}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <a [routerLink]="['/lp', lp.id]" class="btn btn-sm btn-outline-primary">Bekijk</a>
+            </div>
+            <small class="text-muted">{{ lp.id }}</small>
+            <button class="btn btn-sm btn-outline-danger" (click)="verwijderLp(lp.id)">Verwijder</button>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <button [routerLink]="['/lp-add']" class="btn btn-primary">Voeg LP Toe</button>
+    </div>
+  </div>
+</div>

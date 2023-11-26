@@ -9,6 +9,11 @@ import { AboutComponent } from './about/about.component';
 import { VerzamelingAddComponent } from './verzameling/verzameling-add/verzameling-add.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { VerzamelingUpdateComponent } from './verzameling/verzameling-update/verzameling-update.component';
+import { LpDetailComponent } from './lp/lp-detail/lp-detail.component';
+import { LpListComponent } from './lp/lp-list/lp-list.component';
+import { LpService } from './lp/lp.service';
+import { LpAddComponent } from './lp/lp-add/lp-add.component';
+import { LpUpdateComponent } from './lp/lp-update/lp-update.component';
 
 @NgModule({
   imports: [CommonModule, HttpClientModule, RouterModule, ReactiveFormsModule],
@@ -19,13 +24,22 @@ import { VerzamelingUpdateComponent } from './verzameling/verzameling-update/ver
     VerzamelingAddComponent,
     VerzamelingUpdateComponent,
     VerzamelingUpdateComponent,
+    LpDetailComponent,
+    LpListComponent,
+    LpAddComponent,
+    LpUpdateComponent,
   ],
-  providers: [VerzamelingService],
+  providers: [VerzamelingService, LpService],
   exports: [
     VerzamelingListComponent,
     VerzamelingDetailComponent,
     AboutComponent,
     VerzamelingAddComponent,
+    VerzamelingUpdateComponent,
+    LpDetailComponent,
+    LpListComponent,
+    LpAddComponent,
+    LpUpdateComponent,
   ],
 })
 export class FeaturesModule {}

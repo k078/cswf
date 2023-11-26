@@ -7,10 +7,14 @@ type Label = string;
 export interface ILp {
     id:Id;
     titel:string;
-    artiest:IArtiest;
+    artiest:string;
     release:Date;
     land:string;
-    label:Label;
+    label:string;
     genre:Genre;
-    featurings: IArtiest[];
+    img:string;
 }
+
+export type ICreateLp = Pick<ILp, 'titel' | 'artiest' | 'release' | 'land' | 'label' | 'genre' | 'img'>;
+export type IUpdateLp = Partial<Omit<ILp, 'id'>>;
+export type IUpsertLp=ILp;

@@ -1,0 +1,17 @@
+<form [formGroup]="lpForm">
+  <label for="titel">Titel:</label>
+  <input type="text" class="form-control" id="titel" formControlName="titel">
+
+  <label for="artiest">Artiest:</label>
+  <input type="text" class="form-control" id="artiest" formControlName="artiest">
+
+  <label for="genre">Genre:</label>
+  <select class="form-control" id="genre" formControlName="genre">
+    <option *ngFor="let genre of genres" [value]="genre">{{ genre }}</option>
+  </select>
+
+  <label for="img">Afbeelding URL:</label>
+  <input type="text" class="form-control" id="img" formControlName="img">
+
+  <button type="submit" (click)="onSubmit()" class="btn btn-primary">Opslaan</button>
+</form>

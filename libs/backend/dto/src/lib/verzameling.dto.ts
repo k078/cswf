@@ -22,6 +22,13 @@ export class CreateVerzamelingDto implements ICreateVerzameling {
   @IsString()
   @IsNotEmpty()
   info!: string;
+
+  @IsDate()
+  @IsNotEmpty()
+  oprichting!: Date;
+
+  @IsNotEmpty()
+  lps!: Array<number>;
 }
 
 export class UpdateVerzamelingDto implements IUpdateVerzameling{
@@ -60,4 +67,7 @@ export class UpsertVerzamelingDto implements IUpsertVerzameling{
   @IsNotEmpty()
   @IsString()
   info!: string;
+
+  @IsNotEmpty()
+  lps!: Array<number>;
 }
