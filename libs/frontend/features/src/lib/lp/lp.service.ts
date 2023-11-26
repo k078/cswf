@@ -13,7 +13,7 @@ export const httpOptions = {
 
 @Injectable()
 export class LpService {
-  private endpoint = 'http://localhost:3000/api/lp';
+  private endpoint = 'https://cswf-backend.azurewebsites.net/api/lp';
 
   constructor(private readonly http: HttpClient) {}
 
