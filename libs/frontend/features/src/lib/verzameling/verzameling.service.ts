@@ -23,7 +23,8 @@ export const httpOptions = {
  */
 @Injectable()
 export class VerzamelingService {
-    endpoint = 'https://cswf-backend.azurewebsites.net/api/verzameling';
+    endpoint = 'localhost:3000/api/verzameling';
+    //endpoint = 'https://cswf-backend.azurewebsites.net/api/verzameling';
 
     constructor(private readonly http: HttpClient) {}
 

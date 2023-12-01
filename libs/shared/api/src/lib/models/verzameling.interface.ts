@@ -1,6 +1,4 @@
-import { IGebruiker } from './gebruiker.interface';
 import { Id } from './id.type';
-import { ILp } from './lp.interface';
 
 type User = string;
 
@@ -13,6 +11,6 @@ export interface IVerzameling {
     lps:Array<number>;
 }
 
-export type ICreateVerzameling = Pick<IVerzameling, 'naam' | 'eigenaar' | 'info' | 'lps'>;
+export type ICreateVerzameling = Pick<IVerzameling, 'naam' | 'eigenaar' | 'info'>;
 export type IUpdateVerzameling = Partial<Omit<IVerzameling, 'id'>>;
 export type IUpsertVerzameling=IVerzameling;

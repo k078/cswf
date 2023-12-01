@@ -5,155 +5,46 @@ import { Logger } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { ValidationError } from 'class-validator';
+import { VerzamelingDocument } from './verzameling.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
 
 
 @Injectable()
 export class VerzamelingService {
-  TAG = 'VerzamelingService';
+  private readonly logger = new Logger(VerzamelingService.name);
 
-  private Verzamelingen$ = new BehaviorSubject<IVerzameling[]>([
-    {
-      id: 1,
-      naam: 'LPs van Kalle',
-      eigenaar: 'Kalle',
-      info: 'Een kartonnen doos met wat LPs erin',
-      oprichting: new Date('2021-01-01'),
-      lps: [1, 2],
-    },
-    {
-      id: 2,
-      naam: 'Platendoos zolder',
-      eigenaar: 'Sten',
-      info: 'Doos met wat platen erin',
-      oprichting: new Date('2021-01-01'),
-      lps: [2],
-    },
-    {
-      id: 3,
-      naam: 'Meer LPs van Kalle',
-      eigenaar: 'Kalle',
-      info: 'Tweede verzameling met wat platen erin',
-      oprichting: new Date('2021-01-01'),
-      lps: [],
-    },
-    {
-      id: 4,
-      naam: 'LPs van vader',
-      eigenaar: 'Kalle',
-      info: 'Doos van vader met platen van vroeger',
-      oprichting: new Date('2021-01-01'),
-      lps: [1, 2, 3],
-    },
-    {
-      id: 5,
-      naam: 'Verzameling Sten',
-      eigenaar: 'Sten',
-      info: 'Verzameling nieuwe platen van Sten',
-      oprichting: new Date('2021-01-01'),
-      lps: [3],
-    },
-  ]);
+  constructor(
+    @InjectModel('Verzameling') private readonly verzamelingModel: Model<VerzamelingDocument>,
+  ) {}
 
-  getAll(): IVerzameling[] {
-    Logger.log('getAll', this.TAG);
-    return this.Verzamelingen$.value.sort((a, b) => a.id - b.id);
+  async findAll(): Promise<IVerzameling[]> {
+    const verzamelingen = await this.verzamelingModel.find().exec();
+    return verzamelingen;
   }
 
-  getOne(id: number): IVerzameling {
-    Logger.log(`getOne - Received id: ${id}`, this.TAG);
-    Logger.log(`getOne(${id}) - Verzamelingen$: ${JSON.stringify(this.Verzamelingen$.value.map(v => v.id))}`, this.TAG);
-    const Verzameling = this.Verzamelingen$.value.find((td) => {
-        Logger.log(`Checking id: ${td.id}`, this.TAG);
-        return td.id === +id;
-    });
+  async findOne(id: string): Promise<IVerzameling | null> {
+    const verzameling = await this.verzamelingModel.findById(id).exec();
+    return verzameling;
+  }
 
-    if (!Verzameling) {
-        Logger.log(`getOne(${id}) - Verzameling not found!`, this.TAG);
-        throw new NotFoundException(`Verzameling could not be found!`);
+  async create(verzameling: CreateVerzamelingDto): Promise<IVerzameling> {
+
+    const toCreateVerzameling : CreateVerzamelingDto ={
+      naam: verzameling.naam,
+      eigenaar: verzameling.eigenaar,
+      oprichting: new Date(Date.now()),
+      info: verzameling.info,
+      lps: new Array<number>()
     }
-
-    Logger.log(`getOne(${id}) - Found Verzameling: ${JSON.stringify(Verzameling)}`, this.TAG);
-    return Verzameling;
-}
-
-
-
-
-  create(verzamelingDto: Pick<IVerzameling, 'naam' | 'eigenaar' | 'info'>): IVerzameling {
-    Logger.log('create', this.TAG);
-    Logger.log('Received data:', verzamelingDto);
-
-    try {
-      // Maak een nieuw IVerzameling object zonder het 'id' veld
-
-      const randId = Math.floor(Math.random() * 1000);
-      const currentVerzamelingen = this.Verzamelingen$.value;
-      const verzamelingObject: IVerzameling = {
-        // Of een andere logica om een nieuw id te genereren
-         id: randId,
-         naam: verzamelingDto.naam,
-         eigenaar: verzamelingDto.eigenaar,
-         info: verzamelingDto.info,
-         oprichting: new Date(),
-         lps: []
-       };
-
-      this.Verzamelingen$.next([...currentVerzamelingen, verzamelingObject]);
-      return verzamelingObject;
-    } catch (errors) {
-      // Als er validatiefouten optreden, behandel ze hier
-      if (errors instanceof Array && errors.length > 0 && errors[0] instanceof ValidationError) {
-        throw new BadRequestException(errors[0].toString());
-      } else {
-        throw errors;
-      }
-    }
+    const createdVerzameling = this.verzamelingModel.create(toCreateVerzameling);
+    return createdVerzameling;
   }
 
-
-
-  delete(id: number): IVerzameling {
-    Logger.log('delete', this.TAG);
-    const current = this.Verzamelingen$.value;
-    const VerzamelingToDelete = this.getOne(id);
-    this.Verzamelingen$.next([
-      ...current.filter((Verzameling) => Verzameling.id !== VerzamelingToDelete.id),
-    ]);
-    return VerzamelingToDelete;
+  async update(id: string, verzameling: UpdateVerzamelingDto): Promise<IVerzameling | null> {
+    return this.verzamelingModel.findByIdAndUpdate(id, verzameling, { new: true }).exec();
   }
 
-  update(id: number, verzamelingDto: Pick<IVerzameling, 'naam' | 'eigenaar' | 'info'>): IVerzameling {
-    Logger.log('update', this.TAG);
-    Logger.log('Received data:', verzamelingDto);
-
-    try {
-      const currentVerzamelingen = this.Verzamelingen$.value;
-      const verzamelingToUpdate = this.getOne(id);
-
-      // Update alleen de velden die zijn opgegeven in de verzamelingDto
-      const updatedVerzameling: IVerzameling = {
-        id: verzamelingToUpdate.id,
-        naam: verzamelingDto.naam || verzamelingToUpdate.naam,
-        eigenaar: verzamelingDto.eigenaar || verzamelingToUpdate.eigenaar,
-        info: verzamelingDto.info || verzamelingToUpdate.info,
-        oprichting: verzamelingToUpdate.oprichting,
-        lps: verzamelingToUpdate.lps,
-      };
-
-      this.Verzamelingen$.next([
-        ...currentVerzamelingen.filter((v) => v.id !== verzamelingToUpdate.id),
-        updatedVerzameling,
-      ]);
-
-      return updatedVerzameling;
-    } catch (errors) {
-      // Als er validatiefouten optreden, behandel ze hier
-      if (errors instanceof Array && errors.length > 0 && errors[0] instanceof ValidationError) {
-        throw new BadRequestException(errors[0].toString());
-      } else {
-        throw errors;
-      }
-    }
-  }
 
 }

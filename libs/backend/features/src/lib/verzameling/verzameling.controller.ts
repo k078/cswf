@@ -6,37 +6,30 @@ import { CreateVerzamelingDto } from '@cswf/backend/dto';
 
 @Controller('Verzameling')
 export class VerzamelingController {
-    constructor(private VerzamelingService: VerzamelingService) {}
+    constructor(private verzamelingService: VerzamelingService) {}
 
     @Get('')
-    getAll(): IVerzameling[] {
-        return this.VerzamelingService.getAll();
+    async getAll(): Promise<IVerzameling[]> {
+        return await this.verzamelingService.findAll();
     }
 
     @Get(':id')
-    getOne(@Param('id') id: number): IVerzameling {
-        return this.VerzamelingService.getOne(id);
+    async getOne(@Param('id') id: string): Promise<IVerzameling | null> {
+        return await this.verzamelingService.findOne(id);
     }
-
 
     @Post('')
-    create(@Body() data: IVerzameling): IVerzameling{
+    async create(@Body() data: CreateVerzamelingDto): Promise<IVerzameling> {
         console.log('Received data:', data);
-        return this.VerzamelingService.create(data);
+        return await this.verzamelingService.create(data);
     }
 
-    @Delete(':id')
-    delete(@Param('id') id: number): IVerzameling {
-        return this.VerzamelingService.delete(id);
-    }
 
     @Put(':id')
-    update(
-        @Param('id') id: number,
+    async update(
+        @Param('id') id: string,
         @Body() data: IVerzameling
-    ):IVerzameling{
-        return this.VerzamelingService.update(id, data);
+    ): Promise<IVerzameling | null> {
+        return await this.verzamelingService.update(id, data);
     }
 }
-
-
