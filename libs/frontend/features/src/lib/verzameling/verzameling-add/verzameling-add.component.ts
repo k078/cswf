@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { VerzamelingService } from '../verzameling.service';
 import { Router } from '@angular/router';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IVerzameling } from '@cswf/shared/api';
 
 @Component({
@@ -9,11 +10,14 @@ import { IVerzameling } from '@cswf/shared/api';
   templateUrl: './verzameling-add.component.html',
   styleUrls: ['./verzameling-add.component.css'],
 })
-
 export class VerzamelingAddComponent {
-  verzamelingForm: FormGroup;
+  verzamelingForm!: FormGroup; // Voeg de non-null assertion toe
 
-  constructor(private verzamelingService: VerzamelingService, private router:Router, private formBuilder:FormBuilder) {
+  constructor(
+    private verzamelingService: VerzamelingService,
+    private router: Router,
+    private formBuilder: FormBuilder
+  ) {
     this.verzamelingForm = this.formBuilder.group({
       naam: ['', Validators.required],
       eigenaar: ['', Validators.required],
@@ -35,7 +39,4 @@ export class VerzamelingAddComponent {
       );
     }
   }
-
 }
-
-

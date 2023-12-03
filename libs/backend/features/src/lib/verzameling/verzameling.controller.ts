@@ -10,24 +10,29 @@ export class VerzamelingController {
 
     @Get('')
     async getAll(): Promise<IVerzameling[]> {
-        return await this.verzamelingService.findAll();
+        return this.verzamelingService.findAll();
     }
 
     @Get(':id')
-    async getOne(@Param('id') id: string): Promise<IVerzameling | null> {
+    async getOne(@Param('id') id: number): Promise<IVerzameling | null> {
         return await this.verzamelingService.findOne(id);
     }
 
     @Post('')
     async create(@Body() data: CreateVerzamelingDto): Promise<IVerzameling> {
         console.log('Received data:', data);
-        return await this.verzamelingService.create(data);
+        return this.verzamelingService.create(data);
+    }
+
+    @Delete(':id')
+    async delete(@Param('id') id: number): Promise<IVerzameling | null> {
+      return this.verzamelingService.delete(id);
     }
 
 
     @Put(':id')
     async update(
-        @Param('id') id: string,
+        @Param('id') id: number,
         @Body() data: IVerzameling
     ): Promise<IVerzameling | null> {
         return await this.verzamelingService.update(id, data);

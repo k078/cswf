@@ -17,10 +17,10 @@ async function bootstrap() {
   const corsOptions = {
     origin: '*', // Of specificeer het specifieke domein van je frontend.
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
+    credentials: false,
   };
   app.enableCors(corsOptions);
-  
+
   app.useGlobalPipes(new ValidationPipe());
 
   app.useGlobalInterceptors(new ApiResponseInterceptor());

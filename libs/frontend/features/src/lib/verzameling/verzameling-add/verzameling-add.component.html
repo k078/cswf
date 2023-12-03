@@ -1,10 +1,21 @@
-<form [formGroup]="verzamelingForm">
+<form [formGroup]="verzamelingForm" (ngSubmit)="onSubmit()">
   <label for="naam">Naam:</label>
   <input type="text" class="form-control" id="naam" formControlName="naam">
+  <div *ngIf="verzamelingForm?.get('naam')?.hasError('required') && verzamelingForm?.get('naam')?.touched">
+    Naam is vereist.
+  </div>
+
   <label for="eigenaar">Eigenaar:</label>
   <input type="text" class="form-control" id="eigenaar" formControlName="eigenaar">
+  <div *ngIf="verzamelingForm.get('eigenaar')?.hasError('required') && verzamelingForm.get('eigenaar')?.touched">
+    Eigenaar is vereist.
+  </div>
+
   <label for="info">Informatie:</label>
   <input type="text" class="form-control" id="info" formControlName="info">
-  <button type="submit" (click)="onSubmit()" class="btn btn-primary">Opslaan</button>
-</form>
+  <div *ngIf="verzamelingForm.get('info')?.hasError('required') && verzamelingForm.get('info')?.touched">
+    Informatie is vereist.
+  </div>
 
+  <button type="submit" class="btn btn-primary" [disabled]="!verzamelingForm.valid">Opslaan</button>
+</form>

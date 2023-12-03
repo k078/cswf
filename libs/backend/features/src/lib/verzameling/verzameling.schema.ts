@@ -4,9 +4,11 @@ import { IVerzameling, IGebruiker, ILp } from '@cswf/shared/api';
 
 export type VerzamelingDocument = Verzameling & Document;
 
-@Schema()
+@Schema({
+  versionKey: false,
+})
 export class Verzameling implements IVerzameling {
-  @Prop()
+  @Prop({ type:Number, unique: true, required: true })
   id!: number;
 
   @Prop({ required: true })
@@ -21,7 +23,7 @@ export class Verzameling implements IVerzameling {
   @Prop({ required: false })
   info!: string;
 
-  @Prop({ required: false })
+  @Prop({ required: false, type: [] })
   lps!: Array<number>;
 }
 

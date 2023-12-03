@@ -14,9 +14,12 @@ import { LpListComponent } from './lp/lp-list/lp-list.component';
 import { LpService } from './lp/lp.service';
 import { LpAddComponent } from './lp/lp-add/lp-add.component';
 import { LpUpdateComponent } from './lp/lp-update/lp-update.component';
+import { FormsModule} from '@angular/forms';
+
+
 
 @NgModule({
-  imports: [CommonModule, HttpClientModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, HttpClientModule, RouterModule, ReactiveFormsModule, FormsModule],
   declarations: [
     VerzamelingListComponent,
     VerzamelingDetailComponent,

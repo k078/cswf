@@ -3,6 +3,8 @@ import {
   IsString,
   IsNumber,
   IsDate,
+  IsOptional,
+  IsArray,
 } from 'class-validator';
 import {
   ICreateVerzameling,
@@ -22,13 +24,6 @@ export class CreateVerzamelingDto implements ICreateVerzameling {
   @IsString()
   @IsNotEmpty()
   info!: string;
-
-  @IsDate()
-  @IsNotEmpty()
-  oprichting!: Date;
-
-  @IsNotEmpty()
-  lps!: Array<number>;
 }
 
 export class UpdateVerzamelingDto implements IUpdateVerzameling{
