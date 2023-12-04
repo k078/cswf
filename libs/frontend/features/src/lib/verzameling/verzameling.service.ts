@@ -108,15 +108,19 @@ export class VerzamelingService {
 
     }
 
-    public addToVerzameling(lpId: number, verzamelingId: number): Observable<any> {
+    public addToVerzameling(lpId: number, verzamelingId: number): Observable<ApiResponse<any>> {
       const url = `${this.endpoint}/add-to-verzameling/${lpId}/${verzamelingId}`;
 
-      return this.http.post<ApiResponse<any>>(url, {}, httpOptions).pipe(
+      return this.http.post<ApiResponse<any>>(url, {}, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          // Voeg eventueel andere headers toe als dat nodig is
+        }),
+      }).pipe(
         tap(console.log),
         catchError(this.handleError)
       );
     }
-
 
     /**
      * Handle errors.

@@ -16,7 +16,7 @@
       </div>
       <div class="detail">
         <span class="label">Release:</span>
-        <span class="value">{{ lp.release | date:'yyyy-MM-dd' }}</span>
+        <span class="value">{{ lp.release | date : 'yyyy-MM-dd' }}</span>
       </div>
       <div class="detail">
         <span class="label">Land:</span>
@@ -32,20 +32,23 @@
       </div>
     </div>
     <div class="image-container">
-      <img class="lp-image" [src]="lp.img" alt="{{ lp.titel }}">
+      <img class="lp-image" [src]="lp.img" alt="{{ lp.titel }}" />
     </div>
-
   </div>
   <div class="buttons">
-    <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary">Aanpassen</button>
-    <div class="dropdown" *ngIf="verzamelingen.length > 0">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Voeg toe aan verzameling
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <button *ngFor="let verzameling of verzamelingen" class="dropdown-item" (click)="addToVerzameling(lp.id, verzameling.id)">
-          {{ verzameling.naam }}
-        </button>
-      </div>
+    <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary">
+      Aanpassen
+    </button>
+    <select class="" [(ngModel)]="selectedVerzameling">
+      <option *ngFor="let verzameling of verzamelingen" [ngValue]="verzameling">
+        {{ verzameling.naam }}
+      </option>
+    </select>
+    <button (click)="addToVerzameling()" class="btn btn-primary">
+      Toevoegen aan verzameling
+    </button>
+    <div *ngIf="errorMessage">
+      {{ errorMessage }}
     </div>
+  </div>
 </div>
