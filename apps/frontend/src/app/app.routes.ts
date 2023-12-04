@@ -23,6 +23,8 @@ export const appRoutes: Routes = [
   { path: 'lp', component: LpListComponent },
   { path: 'lp-add', component: LpAddComponent },
   { path: 'lp-update/:id', component: LpUpdateComponent },
+  { path: 'add-to-verzameling/:lpId/:verzamelingId', component: LpDetailComponent },
+
 ];
 
 @NgModule({

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { VerzamelingListComponent } from './verzameling/verzameling-list/verzameling-list.component';
 import { VerzamelingDetailComponent } from './verzameling/verzameling-detail/verzameling-detail.component';
 import { VerzamelingService } from './verzameling/verzameling.service';
@@ -32,7 +32,7 @@ import { FormsModule} from '@angular/forms';
     LpAddComponent,
     LpUpdateComponent,
   ],
-  providers: [VerzamelingService, LpService],
+  providers: [VerzamelingService, LpService, DatePipe],
   exports: [
     VerzamelingListComponent,
     VerzamelingDetailComponent,

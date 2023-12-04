@@ -16,13 +16,16 @@ export class LpAddComponent {
   genres: Genre[] = Object.values(Genre).map(value => value as Genre);
 
   constructor(private lpService: LpService, private router: Router, private formBuilder: FormBuilder) {
-    this.lpForm = this.formBuilder.group({
-      titel: ['', Validators.required],
-      artiest: ['', Validators.required],
-      genre: ['', Validators.required],
-      img: ['', Validators.required],
-    });
-  }
+      this.lpForm = this.formBuilder.group({
+        titel: ['', Validators.required],
+        artiest: ['', Validators.required],
+        release: ['', Validators.required],
+        land: ['', Validators.required],
+        label: ['', Validators.required],
+        genre: ['', Validators.required],
+        img: ['', Validators.required],
+      });
+    }
 
   onSubmit(): void {
     if (this.lpForm.valid) {

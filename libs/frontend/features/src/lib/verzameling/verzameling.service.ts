@@ -108,6 +108,16 @@ export class VerzamelingService {
 
     }
 
+    public addToVerzameling(lpId: number, verzamelingId: number): Observable<any> {
+      const url = `${this.endpoint}/add-to-verzameling/${lpId}/${verzamelingId}`;
+
+      return this.http.post<ApiResponse<any>>(url, {}, httpOptions).pipe(
+        tap(console.log),
+        catchError(this.handleError)
+      );
+    }
+
+
     /**
      * Handle errors.
      */

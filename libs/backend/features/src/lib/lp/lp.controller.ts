@@ -1,41 +1,40 @@
 import { Controller, Delete, Put } from '@nestjs/common';
+import { LpService } from './lp.service';
 import { Get, Param, Post, Body } from '@nestjs/common';
 import { ILp } from '@cswf/shared/api';
-import { LpService } from './lp.service';
+import { CreateLpDto } from '@cswf/backend/dto';
 
 @Controller('Lp')
 export class LpController {
-    constructor(private LpService: LpService) {}
+    constructor(private lpService: LpService) {}
 
     @Get('')
-    getAll(): ILp[] {
-        return this.LpService.getAll();
+    async getAll(): Promise<ILp[]> {
+        return this.lpService.findAll();
     }
 
     @Get(':id')
-    getOne(@Param('id') id: number): ILp {
-        return this.LpService.getOne(id);
+    async getOne(@Param('id') id: number): Promise<ILp | null> {
+        return await this.lpService.findOne(id);
     }
 
-
     @Post('')
-    create(@Body() data: ILp): ILp{
+    async create(@Body() data: CreateLpDto): Promise<ILp> {
         console.log('Received data:', data);
-        return this.LpService.create(data);
+        return this.lpService.create(data);
     }
 
     @Delete(':id')
-    delete(@Param('id') id: number): ILp {
-        return this.LpService.delete(id);
+    async delete(@Param('id') id: number): Promise<ILp | null> {
+      return this.lpService.delete(id);
     }
+
 
     @Put(':id')
-    update(
+    async update(
         @Param('id') id: number,
         @Body() data: ILp
-    ):ILp{
-        return this.LpService.update(id, data);
+    ): Promise<ILp | null> {
+        return await this.lpService.update(id, data);
     }
 }
-
-

@@ -38,4 +38,14 @@
   </div>
   <div class="buttons">
     <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary">Aanpassen</button>
+    <div class="dropdown" *ngIf="verzamelingen.length > 0">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Voeg toe aan verzameling
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <button *ngFor="let verzameling of verzamelingen" class="dropdown-item" (click)="addToVerzameling(lp.id, verzameling.id)">
+          {{ verzameling.naam }}
+        </button>
+      </div>
+    </div>
 </div>

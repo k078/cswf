@@ -3,6 +3,8 @@ import {
   IsString,
   IsNumber,
   IsDate,
+  IsDateString,
+  IsEnum,
 } from 'class-validator';
 import {
   ICreateLp,
@@ -20,7 +22,7 @@ export class CreateLpDto implements ICreateLp {
   @IsNotEmpty()
   artiest!: string;
 
-  @IsDate()
+  @IsDateString()  // IsDateString voor datumvalidatie
   @IsNotEmpty()
   release!: Date;
 
@@ -32,6 +34,7 @@ export class CreateLpDto implements ICreateLp {
   @IsNotEmpty()
   label!: string;
 
+  @IsEnum(Genre)
   @IsNotEmpty()
   genre!: Genre;
 
@@ -39,6 +42,7 @@ export class CreateLpDto implements ICreateLp {
   @IsNotEmpty()
   img!: string;
 }
+
 
 export class UpdateLpDto implements IUpdateLp{
   @IsString()

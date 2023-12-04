@@ -18,6 +18,18 @@ export class VerzamelingController {
         return await this.verzamelingService.findOne(id);
     }
 
+    @Post('add-to-verzameling/:id/:verzamelingId')
+  async addToVerzameling(
+    @Param('id') lpId: string,
+    @Param('verzamelingId') verzamelingId: string,
+  ): Promise<string> {
+    const result = await this.verzamelingService.addToVerzameling(
+      parseInt(lpId, 10),
+      parseInt(verzamelingId, 10),
+    );
+    return result;
+  }
+
     @Post('')
     async create(@Body() data: CreateVerzamelingDto): Promise<IVerzameling> {
         console.log('Received data:', data);
