@@ -39,6 +39,10 @@
                 <a [routerLink]="['/lp', lp.id]" class="btn btn-sm btn-outline-primary">Bekijk</a>
               </div>
               <small class="text-muted">{{ lp.id }}</small>
+              <div class="d-flex justify-content-end">
+                <button (click)="deleteFromVerzameling(lp)" class="btn btn-sm btn-outline-danger">Verwijder</button>
+              </div>
+
             </div>
           </div>
         </div>

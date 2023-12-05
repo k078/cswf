@@ -38,7 +38,22 @@ export class VerzamelingDetailComponent implements OnInit {
     }
   }
 
+  deleteFromVerzameling(lp: ILp): void {
+    if (this.verzameling) {
+      this.verzameling.lps = this.verzameling.lps.filter((id) => id !== lp.id);
+      this.VerzamelingService.updateVerzameling(this.verzameling).subscribe(
+        (verzameling) => {
+          this.verzameling = verzameling;
+          this.loadLps();
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
+    }
+  }
+
   verwijderVerzameling(id: number): void {
     this.VerzamelingService.verwijderVerzameling(id);
-}
+  }
 }

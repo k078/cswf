@@ -35,20 +35,23 @@
       <img class="lp-image" [src]="lp.img" alt="{{ lp.titel }}" />
     </div>
   </div>
-  <div class="buttons">
-    <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary">
-      Aanpassen
-    </button>
-    <select class="" [(ngModel)]="selectedVerzameling">
-      <option *ngFor="let verzameling of verzamelingen" [ngValue]="verzameling">
-        {{ verzameling.naam }}
-      </option>
-    </select>
-    <button (click)="addToVerzameling()" class="btn btn-primary">
-      Toevoegen aan verzameling
-    </button>
-    <div *ngIf="errorMessage">
-      {{ errorMessage }}
+      <div class="buttons mt-3">
+
+        <select class="custom-select mr-2" [(ngModel)]="selectedVerzameling">
+          <option *ngFor="let verzameling of verzamelingen" [ngValue]="verzameling">
+            {{ verzameling.naam }}
+          </option>
+        </select>
+
+        <button (click)="addToVerzameling()" class="btn btn-success">
+          Toevoegen aan verzameling
+        </button>
+
+        <div *ngIf="errorMessage" class="mt-2 text-danger">
+          {{ errorMessage }}
+        </div>
+      </div>
+      <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary mr-2">
+        Aanpassen
+      </button>
     </div>
-  </div>
-</div>
