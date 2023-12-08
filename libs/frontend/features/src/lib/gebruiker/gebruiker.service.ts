@@ -82,7 +82,7 @@ export class GebruikerService {
                 catchError(this.handleError)
             );
     }
-
+    
     public editUser(user: IGebruiker): Observable<IGebruiker> {
         console.log(`editUser ${this.endpoint}`, user);
         const url = `${this.endpoint}/${user.id}`;

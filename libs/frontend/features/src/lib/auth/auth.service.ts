@@ -14,7 +14,7 @@ export const AUTH_SERVICE_TOKEN = new InjectionToken<AuthService>(
   providedIn: 'root',
 })
 export class AuthService {
-  endpoint = 'http://localhost:3000/api';
+  endpoint = 'http://localhost:3000/api/gebruiker';
   public currentUser$ = new BehaviorSubject<IGebruiker | null>(null);
   private readonly CURRENT_USER = 'currentuser';
   private readonly headers = new HttpHeaders({
@@ -76,7 +76,7 @@ export class AuthService {
   }
 
   validateToken(userData: IGebruiker): Observable<IGebruiker | null> {
-    const url = `${this.endpoint}/login`;
+    const url = `${this.endpoint}/auth`;
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',

@@ -3,6 +3,7 @@ import { VerzamelingService } from '../verzameling.service';
 import { IVerzameling } from '@cswf/shared/api';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
     selector: 'cswf-verzameling-list',
@@ -15,14 +16,16 @@ export class VerzamelingListComponent implements OnInit, OnDestroy {
     sortAscending = true;
     sortAscendingId = true;
 
-    constructor(private VerzamelingService: VerzamelingService, private router:Router) {}
+    constructor(private VerzamelingService: VerzamelingService, private router:Router, private authService: AuthService) {}
 
 
     ngOnInit(): void {
+      if (!this.authService.isAuthenticated()) this.router.navigate(['/login']); {
         this.subscription = this.VerzamelingService.list().subscribe((results) => {
             console.log(`results: ${results}`);
             this.verzamelingen = results;
         });
+      }
     }
 
     verwijderVerzameling(id: number): void {

@@ -28,7 +28,6 @@ export const appRoutes: Routes = [
   { path: 'add-to-verzameling/:lpId/:verzamelingId', component: LpDetailComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-
 ];
 
 @NgModule({

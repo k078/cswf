@@ -21,7 +21,7 @@ export class Gebruiker implements IGebruiker {
   geboortedatum!: Date;
 
   @Prop({ type: String, enum: Rol, required: true })
-  rol!: Rol;
+  rol: Rol = Rol.USER;
 
   @Prop({ required: true })
   verzamelingen!: IVerzameling[];

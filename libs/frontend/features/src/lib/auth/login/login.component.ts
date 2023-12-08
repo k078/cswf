@@ -22,8 +22,9 @@ export class LoginComponent {
   }
 
   login():void {
+    console.log('LoginComponent login()');
     if (this.loginForm.valid) {
-        const email = this.loginForm.value.email;
+        const email = this.loginForm.value.username;
         const password = this.loginForm.value.password;
         this.authService
         .login(email, password)

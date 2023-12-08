@@ -3,6 +3,7 @@ import { LpService } from '../lp.service';
 import { ILp } from '@cswf/shared/api';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'cswf-lp-list',
@@ -15,13 +16,19 @@ export class LpListComponent implements OnInit, OnDestroy {
   sortAscending = true;
   sortAscendingId = true;
 
-  constructor(private lpService: LpService, private router: Router) {}
+  constructor(
+    private lpService: LpService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.subscription = this.lpService.list().subscribe((results) => {
-      console.log(`results: ${results}`);
-      this.lps = results;
-    });
+    if (!this.authService.isAuthenticated()) this.router.navigate(['/login']); {
+      this.subscription = this.lpService.list().subscribe((results) => {
+        console.log(`results: ${results}`);
+        this.lps = results;
+      });
+    }
   }
 
   verwijderLp(id: number): void {

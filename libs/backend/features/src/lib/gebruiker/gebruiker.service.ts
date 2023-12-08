@@ -64,7 +64,7 @@ export class GebruikerService {
         .exec();
 
     if (!gebruiker) {
-        throw new Error(`gebruiker with email ${gebruikersnaam} not found`);
+        throw new Error(`gebruiker with gebruikersnaam ${gebruikersnaam} not found`);
     }
 
     const secretKey = randomBytes(32).toString('hex');

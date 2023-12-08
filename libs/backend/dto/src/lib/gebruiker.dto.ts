@@ -1,9 +1,10 @@
-import { ICreateGebruiker, IGebruiker, IUpdateGebruiker, Rol } from "@cswf/shared/api";
+import { ICreateGebruiker, IUpdateGebruiker, Rol } from "@cswf/shared/api";
 import {
   IsNotEmpty,
   IsString,
   IsNumber,
   IsDate,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateGebruikerDto implements ICreateGebruiker {
@@ -16,10 +17,10 @@ export class CreateGebruikerDto implements ICreateGebruiker {
   wachtwoord!: string;
 
   @IsNotEmpty()
-  rol!: Rol;
+  rol: Rol = Rol.USER;
 
   @IsDate()
-  @IsNotEmpty()
+  @IsOptional()
   geboortedatum!: Date;
 }
 
