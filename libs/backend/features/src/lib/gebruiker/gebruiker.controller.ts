@@ -2,7 +2,7 @@ import { Controller, Delete, Put } from '@nestjs/common';
 import { Get, Param, Post, Body } from '@nestjs/common';
 import { IGebruiker } from '@cswf/shared/api';
 import { GebruikerService } from './gebruiker.service';
-import { CreateGebruikerDto } from '@cswf/shared/api';
+import { CreateGebruikerDto } from '@cswf/backend/dto';
 
 @Controller('Gebruiker')
 export class GebruikerController {
@@ -25,12 +25,12 @@ export class GebruikerController {
 
     @Post('login')
     async login(@Body() gebruiker: CreateGebruikerDto): Promise<IGebruiker | null> {
-        return this.GebruikerService.login(gebruiker.email, gebruiker.password);
+        return this.GebruikerService.login(gebruiker.gebruikersnaam, gebruiker.wachtwoord);
     }
 
     @Post('logout/:id')
     async logout(@Param('id') id: number): Promise<void> {
-        await this.gebruikerService.logout(id);
+        await this.GebruikerService.logout(id);
     }
 
     @Delete(':id')
