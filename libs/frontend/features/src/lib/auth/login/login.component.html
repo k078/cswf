@@ -1,0 +1,10 @@
+<form [formGroup]="loginForm">
+  <label for="titel">Gebruikersnaam:</label>
+  <input type="text" class="form-control" id="username" formControlName="username">
+
+  <label for="artiest">Wachtwoord:</label>
+  <input type="password" class="form-control" id="password" formControlName="password">
+
+  <button type="submit" (click)="login()" class="btn btn-primary">inloggen</button>
+</form>
+

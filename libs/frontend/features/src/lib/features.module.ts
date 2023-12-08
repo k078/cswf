@@ -15,7 +15,9 @@ import { LpService } from './lp/lp.service';
 import { LpAddComponent } from './lp/lp-add/lp-add.component';
 import { LpUpdateComponent } from './lp/lp-update/lp-update.component';
 import { FormsModule } from '@angular/forms';
-
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
+import { AuthService } from './auth/auth.service';
 
 @NgModule({
   imports: [
@@ -36,8 +38,10 @@ import { FormsModule } from '@angular/forms';
     LpListComponent,
     LpAddComponent,
     LpUpdateComponent,
+    LoginComponent,
+    RegisterComponent,
   ],
-  providers: [VerzamelingService, LpService, DatePipe],
+  providers: [VerzamelingService, LpService, DatePipe, AuthService],
   exports: [
     VerzamelingListComponent,
     VerzamelingDetailComponent,
@@ -48,6 +52,8 @@ import { FormsModule } from '@angular/forms';
     LpListComponent,
     LpAddComponent,
     LpUpdateComponent,
+    LoginComponent,
+    RegisterComponent,
   ],
 })
 export class FeaturesModule {}

@@ -3,119 +3,100 @@ import { IGebruiker, Rol } from '@cswf/shared/api';
 import { BehaviorSubject} from 'rxjs';
 import { Logger } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
+import { InjectModel } from '@nestjs/mongoose';
+import { Gebruiker, GebruikerDocument } from './gebruiker.schema';
+import { Model } from 'mongoose';
+import { CreateGebruikerDto, UpdateGebruikerDto } from '@cswf/backend/dto';
+import { randomBytes } from 'crypto';
+import { sign } from 'jsonwebtoken';
+
 
 
 @Injectable()
 export class GebruikerService {
-  TAG = 'GebruikerService';
+  private readonly logger = new Logger(GebruikerService.name);
 
-  private Gebruikers$ = new BehaviorSubject<IGebruiker[]>([
-    {
-      id:1,
-      gebruikersnaam: 'admin',
-      wachtwoord: 'admin',
-      rol: Rol.Admin,
-      geboortedatum: new Date('2023-10-6')
+  constructor(
+    @InjectModel(Gebruiker.name) private readonly GebruikerModel: Model<GebruikerDocument>,
+  ) {}
+
+
+  private async getLowestId(): Promise<number> {
+    const usedIds = (await this.GebruikerModel.distinct('id').exec()) as number[];
+    let lowestId = 1;
+    while(usedIds.includes(lowestId)) {
+      lowestId++;
     }
-  ]);
-
-  getAll(): IGebruiker[] {
-    Logger.log('getAll', this.TAG);
-    return this.Gebruikers$.value.sort((a, b) => a.id - b.id);
+    return lowestId;
   }
 
-  getOne(id: number): IGebruiker {
-    Logger.log(`getOne - Received id: ${id}`, this.TAG);
-    Logger.log(`getOne(${id}) - Gebruiker$: ${JSON.stringify(this.Gebruikers$.value.map(v => v.id))}`, this.TAG);
-    const Gebruiker = this.Gebruikers$.value.find((td) => {
-        Logger.log(`Checking id: ${td.id}`, this.TAG);
-        return td.id === +id;
-    });
+  async findAll(): Promise<IGebruiker[]> {
+    const Gebruikeren = await this.GebruikerModel.find().exec();
+    return Gebruikeren;
+  }
 
-    if (!Gebruiker) {
-        Logger.log(`getOne(${id}) - Gebruiker not found!`, this.TAG);
-        throw new NotFoundException(`Gebruiker could not be found!`);
+  async findOne(id: number): Promise<IGebruiker | null> {
+      const item = await this.GebruikerModel.findOne({id}).exec();
+      return item;
+  }
+
+  async create(Gebruiker: CreateGebruikerDto): Promise<IGebruiker> {
+    const id = await this.getLowestId();
+    const GebruikerMetDatum = {
+      ...Gebruiker,
+      id,
+    }
+    console.log('GebruikerMetDatum:', GebruikerMetDatum);
+    const createdGebruiker = await this.GebruikerModel.create(GebruikerMetDatum);
+    return createdGebruiker.toObject(); // Convert to plain object to avoid potential issues with Mongoose documents
+  }
+
+  async delete(id: number): Promise<IGebruiker | null> {
+    const deletedGebruiker = await this.GebruikerModel.findOneAndDelete({id}, {}).exec();
+    return deletedGebruiker as IGebruiker;
+  }
+
+  async login(gebruikersnaam: string, wachtwoord: string): Promise<IGebruiker> {
+    console.log('login called');
+    const gebruiker = await this.GebruikerModel
+        .findOne({ gebruikersnaam, wachtwoord })
+        .lean()
+        .exec();
+
+    if (!gebruiker) {
+        throw new Error(`gebruiker with email ${gebruikersnaam} not found`);
     }
 
-    Logger.log(`getOne(${id}) - Found Gebruiker: ${JSON.stringify(Gebruiker)}`, this.TAG);
-    return Gebruiker;
+    const secretKey = randomBytes(32).toString('hex');
+    const gebruikerId = gebruiker.id.toString();
+    const token = sign({ gebruikerId }, secretKey, {
+        expiresIn: '1h',
+    }) as string;
+
+    const response = { ...gebruiker, token };
+    console.log('First Backend Response:', response);
+    return response as IGebruiker;
 }
 
+async logout(gebruikerId: number): Promise<void> {
+    console.log('logout called');
 
+    const gebruiker = await this.GebruikerModel
+        .findOne({ gebruikerId })
+        .lean()
+        .exec();
 
-
-  create(GebruikerDto: Pick<IGebruiker, 'gebruikersnaam' | 'wachtwoord' | 'rol' | 'geboortedatum'>): IGebruiker {
-    Logger.log('create', this.TAG);
-    Logger.log('Received data:', GebruikerDto);
-
-    try {
-      // Maak een nieuw IGebruiker object zonder het 'id' veld
-
-      const randId = Math.floor(Math.random() * 1000);
-      const currentGebruikeren = this.Gebruikers$.value;
-      const GebruikerObject: IGebruiker = {
-        id: randId,
-        gebruikersnaam: GebruikerDto.gebruikersnaam,
-        wachtwoord: GebruikerDto.wachtwoord,
-        rol: GebruikerDto.rol,
-        geboortedatum: GebruikerDto.geboortedatum
-       };
-
-      this.Gebruikers$.next([...currentGebruikeren, GebruikerObject]);
-      return GebruikerObject;
-    } catch (errors) {
-      // Als er validatiefouten optreden, behandel ze hier
-      if (errors instanceof Array && errors.length > 0 && errors[0] instanceof ValidationError) {
-        throw new BadRequestException(errors[0].toString());
-      } else {
-        throw errors;
-      }
+    if (!gebruiker) {
+        throw new Error(`gebruiker with id ${gebruikerId} not found`);
     }
-  }
 
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('currentgebruiker');
 
-
-  delete(id: number): IGebruiker {
-    Logger.log('delete', this.TAG);
-    const current = this.Gebruikers$.value;
-    const GebruikerToDelete = this.getOne(id);
-    this.Gebruikers$.next([
-      ...current.filter((Gebruiker) => Gebruiker.id !== GebruikerToDelete.id),
-    ]);
-    return GebruikerToDelete;
-  }
-
-  update(id: number, GebruikerDto: Pick<IGebruiker, 'gebruikersnaam' | 'wachtwoord' | 'rol' | 'geboortedatum'>): IGebruiker {
-    Logger.log('update', this.TAG);
-    Logger.log('Received data:', GebruikerDto);
-
-    try {
-      const currentGebruikeren = this.Gebruikers$.value;
-      const GebruikerToUpdate = this.getOne(id);
-
-      // Update alleen de velden die zijn opgegeven in de GebruikerDto
-      const updatedGebruiker: IGebruiker = {
-        id: GebruikerToUpdate.id,
-        gebruikersnaam: GebruikerDto.gebruikersnaam ?? GebruikerToUpdate.gebruikersnaam,
-        wachtwoord: GebruikerDto.wachtwoord ?? GebruikerToUpdate.wachtwoord,
-        rol: GebruikerDto.rol ?? GebruikerToUpdate.rol,
-        geboortedatum: GebruikerDto.geboortedatum ?? GebruikerToUpdate.geboortedatum
-      };
-
-      this.Gebruikers$.next([
-        ...currentGebruikeren.filter((v) => v.id !== GebruikerToUpdate.id),
-        updatedGebruiker,
-      ]);
-
-      return updatedGebruiker;
-    } catch (errors) {
-      // Als er validatiefouten optreden, behandel ze hier
-      if (errors instanceof Array && errors.length > 0 && errors[0] instanceof ValidationError) {
-        throw new BadRequestException(errors[0].toString());
-      } else {
-        throw errors;
-      }
-    }
+    console.log('Logout successful');
+}
+  async update(id: number, Gebruiker: UpdateGebruikerDto): Promise<IGebruiker | null> {
+    return this.GebruikerModel.findOneAndUpdate({id}, Gebruiker, { new: true }).exec();
   }
 
 }

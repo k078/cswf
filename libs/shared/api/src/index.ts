@@ -7,3 +7,4 @@ export * from './lib/models/artiest.interface';
 export * from './lib/models/genre.enum';
 export * from './lib/models/rol.enum';
 export * from './lib/models/gebruiker.interface';
+

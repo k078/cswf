@@ -10,6 +10,8 @@ import { LpDetailComponent } from 'libs/frontend/features/src/lib/lp/lp-detail/l
 import { LpListComponent } from 'libs/frontend/features/src/lib/lp/lp-list/lp-list.component';
 import { LpAddComponent } from 'libs/frontend/features/src/lib/lp/lp-add/lp-add.component';
 import { LpUpdateComponent } from 'libs/frontend/features/src/lib/lp/lp-update/lp-update.component';
+import { LoginComponent } from 'libs/frontend/features/src/lib/auth/login/login.component';
+import { RegisterComponent } from 'libs/frontend/features/src/lib/auth/register/register.component';
 
 
 
@@ -24,6 +26,8 @@ export const appRoutes: Routes = [
   { path: 'lp-add', component: LpAddComponent },
   { path: 'lp-update/:id', component: LpUpdateComponent },
   { path: 'add-to-verzameling/:lpId/:verzamelingId', component: LpDetailComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
 ];
 
