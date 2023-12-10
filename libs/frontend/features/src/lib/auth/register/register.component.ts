@@ -29,7 +29,7 @@ export class RegisterComponent implements OnInit {
 
   register(): void {
     console.log(this.gebruikerService.isUser(this.registerForm.value.gebruikersnaam));
-    if(this.gebruikerService.isUser(this.registerForm.value.gebruikersnaam)){
+    if(this.gebruikerService.isUser(this.registerForm.value.gebruikersnaam)==false){
       if (this.registerForm.valid) {
         const formData = {
           ...this.registerForm.value,
