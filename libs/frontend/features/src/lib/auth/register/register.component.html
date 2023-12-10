@@ -1,1 +1,26 @@
-<p>register works!</p>
+<form [formGroup]="registerForm">
+  <label for="gebruikersnaam">Gebruikersnaam:</label>
+  <input type="text" class="form-control" id="gebruikersnaam" formControlName="gebruikersnaam">
+  <div class="error">
+    {{ errorMessageGebruikersnaam }}
+  </div>
+
+  <label for="wachtwoord">Wachtwoord:</label>
+  <input type="password" class="form-control" id="wachtwoord" formControlName="wachtwoord">
+  <div class="error">
+    {{ errorMessageWachtwoord }}
+  </div>
+
+  <label for="geboortedatum">Geboortedatum:</label>
+  <input type="date" class="form-control" id="geboortedatum" formControlName="geboortedatum">
+  <div class="error">
+    {{ errorMessageGeboortedatum }}
+  </div>
+
+
+ <div class="error">
+    {{ errorMessage }}
+ </div>
+  <button type="submit" (click)="register()" class="btn btn-primary">Registreren</button>
+</form>
+

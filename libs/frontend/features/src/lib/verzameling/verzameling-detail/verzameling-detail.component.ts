@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { VerzamelingService } from '../verzameling.service';
 import { ILp, IVerzameling } from '@cswf/shared/api';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LpService } from '../../lp/lp.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'cswf-verzameling-detail',
@@ -12,23 +13,31 @@ import { LpService } from '../../lp/lp.service';
 export class VerzamelingDetailComponent implements OnInit {
   verzameling: IVerzameling | null = null;
   lps: ILp[] | undefined;
+  gebruiker = this.authService.currentUser$;
 
   constructor(
     private route: ActivatedRoute,
     private VerzamelingService: VerzamelingService,
-    private LpService: LpService
+    private LpService: LpService,
+    private authService: AuthService,
+    private router : Router
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe((params) => {
-      const id = params.get('id');
-      if (id) {
-        this.VerzamelingService.read(id).subscribe((verzameling) => {
-          this.verzameling = verzameling;
-          this.loadLps();
-        });
-      }
-    });
+      this.route.paramMap.subscribe((params) => {
+        const id = params.get('id');
+        if (id) {
+          this.VerzamelingService.read(id).subscribe((verzameling) => {
+            this.verzameling = verzameling;
+            if(this.verzameling?.eigenaar!==this.gebruiker.value?.gebruikersnaam){
+              this.router.navigate(['/']);
+            }
+            this.loadLps();
+          });
+        } else {
+          this.router.navigate(['/']);
+        }
+      });
   }
   loadLps(): void {
     if (this.verzameling) {

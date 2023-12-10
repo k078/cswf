@@ -11,7 +11,7 @@ export class Gebruiker implements IGebruiker {
   @Prop({ type: Number, unique: true, required: true })
   id!: number;
 
-  @Prop({ required: true })
+  @Prop({ unique: true, required: true })
   gebruikersnaam!: string;
 
   @Prop({ required: true })

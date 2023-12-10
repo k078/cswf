@@ -18,6 +18,9 @@ import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { AuthService } from './auth/auth.service';
+import { GebruikerInfoComponent } from './gebruiker/gebruiker-info/gebruiker-info.component';
+import { GebruikerService } from './gebruiker/gebruiker.service';
+import { GebruikerUpdateComponent } from './gebruiker/gebruiker-update/gebruiker-update.component';
 
 @NgModule({
   imports: [
@@ -40,8 +43,10 @@ import { AuthService } from './auth/auth.service';
     LpUpdateComponent,
     LoginComponent,
     RegisterComponent,
+    GebruikerInfoComponent,
+    GebruikerUpdateComponent
   ],
-  providers: [VerzamelingService, LpService, DatePipe, AuthService],
+  providers: [VerzamelingService, LpService, DatePipe, AuthService, GebruikerService],
   exports: [
     VerzamelingListComponent,
     VerzamelingDetailComponent,
@@ -54,6 +59,8 @@ import { AuthService } from './auth/auth.service';
     LpUpdateComponent,
     LoginComponent,
     RegisterComponent,
+    GebruikerInfoComponent,
+    GebruikerUpdateComponent
   ],
 })
 export class FeaturesModule {}

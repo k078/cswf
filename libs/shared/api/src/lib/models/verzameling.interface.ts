@@ -5,7 +5,7 @@ type User = string;
 export interface IVerzameling {
     id:Id;
     naam:string;
-    eigenaar:string;
+    eigenaar:User;
     oprichting:Date;
     info:string;
     lps:Array<number>;

@@ -12,6 +12,8 @@ import { LpAddComponent } from 'libs/frontend/features/src/lib/lp/lp-add/lp-add.
 import { LpUpdateComponent } from 'libs/frontend/features/src/lib/lp/lp-update/lp-update.component';
 import { LoginComponent } from 'libs/frontend/features/src/lib/auth/login/login.component';
 import { RegisterComponent } from 'libs/frontend/features/src/lib/auth/register/register.component';
+import { GebruikerInfoComponent } from 'libs/frontend/features/src/lib/gebruiker/gebruiker-info/gebruiker-info.component';
+import { GebruikerUpdateComponent } from 'libs/frontend/features/src/lib/gebruiker/gebruiker-update/gebruiker-update.component';
 
 
 
@@ -28,6 +30,9 @@ export const appRoutes: Routes = [
   { path: 'add-to-verzameling/:lpId/:verzamelingId', component: LpDetailComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'profile/:id', component: GebruikerInfoComponent },
+  { path: 'profile-update/:id', component: GebruikerUpdateComponent },
+
 ];
 
 @NgModule({

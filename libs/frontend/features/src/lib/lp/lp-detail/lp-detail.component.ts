@@ -3,6 +3,8 @@ import { LpService } from '../lp.service';
 import { ILp, IVerzameling } from '@cswf/shared/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VerzamelingService } from '../../verzameling/verzameling.service';
+import { AuthService } from '../../auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'cswf-lp-detail',
@@ -11,10 +13,12 @@ import { VerzamelingService } from '../../verzameling/verzameling.service';
 })
 export class LpDetailComponent implements OnInit {
   lp: ILp | null = null;
-  verzamelingen: IVerzameling[] = []; // Voeg deze lijn toe
+  verzamelingen: IVerzameling[] = [];
   @Input() selectedLp: number | null = null;
-  @Output() selectedVerzameling : IVerzameling | null = null; // Voeg deze lijn toe
+  @Output() selectedVerzameling : IVerzameling | null = null;
   errorMessage: string | null = null;
+  gebruiker = this.authService.currentUser$;
+  subscription: Subscription | undefined = undefined;
 
   id: number | null = null;
 
@@ -22,7 +26,8 @@ export class LpDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private lpService: LpService,
     private verzamelingService: VerzamelingService, // Voeg deze lijn toe
-    private router : Router
+    private router : Router,
+    private authService: AuthService
   ) {}
 
 
@@ -34,10 +39,12 @@ export class LpDetailComponent implements OnInit {
         this.lpService.read(id).subscribe((lp) => {
           this.lp = lp;
 
-          // Haal de lijst met verzamelingen op
-          this.verzamelingService.list().subscribe((verzamelingen) => {
-            this.verzamelingen = verzamelingen || [];
-          });
+          this.subscription = this.verzamelingService.list().subscribe(
+            (results) => {
+              console.log(`results: ${results}`);
+              this.verzamelingen = results!.filter(p=>p.eigenaar===this.gebruiker.value?.gebruikersnaam);
+            }
+          );
         });
       }
     });

@@ -5,12 +5,6 @@
     Naam is vereist.
   </div>
 
-  <label for="eigenaar">Eigenaar:</label>
-  <input type="text" class="form-control" id="eigenaar" formControlName="eigenaar">
-  <div *ngIf="verzamelingForm.get('eigenaar')?.hasError('required') && verzamelingForm.get('eigenaar')?.touched">
-    Eigenaar is vereist.
-  </div>
-
   <label for="info">Informatie:</label>
   <input type="text" class="form-control" id="info" formControlName="info">
   <div *ngIf="verzamelingForm.get('info')?.hasError('required') && verzamelingForm.get('info')?.touched">

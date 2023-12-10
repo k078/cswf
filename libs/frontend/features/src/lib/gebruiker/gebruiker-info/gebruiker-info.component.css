@@ -1,0 +1,103 @@
+.container {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #424242;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+
+
+.detail {
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #424242;
+}
+
+.value {
+  color: #007bff;
+}
+
+.image-container {
+  flex: 1;
+  margin-left: 20px;
+}
+
+
+.buttons {
+  margin-top: 20px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-danger {
+  margin-left: 10px;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.card {
+  border: 1px solid #dee2e6; /* Lichtgrijze kaartrand */
+  margin: 1rem;
+  width: 300px;
+  transition: transform 0.3s ease; /* Voeg een vloeiende overgang toe */
+}
+
+.card:hover {
+  transform: scale(1.05); /* Maak de kaart iets groter bij hover */
+}
+
+.card-header {
+  background-color: #ffffff;
+  border: transparent;
+  border-bottom: 1px transparent; /* Lichtgrijze lijn onder header */
+}
+
+.card-body {
+  padding: 1rem;
+  background-color: #ffffff;
+  color: #495057;
+}
+
+.btn-outline-primary,
+.btn-outline-danger {
+  transition: background-color 0.3s ease; /* Voeg een vloeiende overgang toe aan de knoppen */
+}
+
+.btn-outline-danger:hover{
+  background-color: #dc3545; /* Donkerder rood voor de gevaarlijke knop */
+  color: #ffffff; /* Witte tekst voor betere leesbaarheid op de donkere achtergrond */
+}
+.btn-outline-primary:hover {
+  background-color: #007bff; /* Donkerder blauw voor de primaire knop, rood voor de gevaarlijke knop */
+  color: #ffffff; /* Witte tekst voor betere leesbaarheid op de donkere achtergrond */
+}
+

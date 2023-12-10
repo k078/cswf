@@ -1,0 +1,12 @@
+<form [formGroup]="gebruikerForm">
+
+  <label for="wachtwoord">Wachtwoord:</label>
+  <input type="password" class="form-control" id="wachtwoord" formControlName="wachtwoord">
+
+  <label for="geboortedatum">Geboortedatum:</label>
+  <input type="date" class="form-control" id="geboortedatum" formControlName="geboortedatum">
+
+  <button type="submit" (click)="onSubmit()" class="btn btn-primary">Opslaan</button>
+</form>
+
+

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router'
 import { isEmpty, isNotEmpty } from 'class-validator';
 import { AuthService } from '../auth.service';
+import { GebruikerService } from '../../gebruiker/gebruiker.service';
 
 
 @Component({
@@ -13,6 +14,7 @@ import { AuthService } from '../auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string | null = null;
+  errorMessagePassword: string | null = null;
 
   constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.loginForm = this.fb.group({
@@ -23,14 +25,27 @@ export class LoginComponent {
 
   login():void {
     console.log('LoginComponent login()');
+    if(this.loginForm.value.username === '') {
+      this.errorMessage = 'Gebruikersnaam is verplicht';
+    }
+    if(this.loginForm.value.password === '') {
+      this.errorMessagePassword = 'Wachtwoord is verplicht';
+    }
     if (this.loginForm.valid) {
         const email = this.loginForm.value.username;
         const password = this.loginForm.value.password;
         this.authService
         .login(email, password)
-        .subscribe((user) => {
-            console.log('Ingelogd user:', user);
-            this.router.navigateByUrl('/');
+        .subscribe(
+          (user) => {
+            if(user) {
+              console.log('Ingelogd user:', user);
+              this.router.navigateByUrl('/');
+            } else {
+              console.error('Geen user gevonden of incorrecte gegevens');
+              this.errorMessage = '';
+              this.errorMessagePassword = 'Geen user gevonden of incorrecte gegevens'
+            }
         },
         (error: any) => {
             console.error('Fout bij het inloggen van user:', error);

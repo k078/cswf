@@ -14,7 +14,8 @@ export const AUTH_SERVICE_TOKEN = new InjectionToken<AuthService>(
   providedIn: 'root',
 })
 export class AuthService {
-  endpoint = 'http://localhost:3000/api/gebruiker';
+  //endpoint = 'http://localhost:3000/api/gebruiker';
+  endpoint = 'https://cswf-backend.azurewebsites.net/api/gebruiker';
   public currentUser$ = new BehaviorSubject<IGebruiker | null>(null);
   private readonly CURRENT_USER = 'currentuser';
   private readonly headers = new HttpHeaders({

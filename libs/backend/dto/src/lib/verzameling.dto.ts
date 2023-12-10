@@ -11,13 +11,13 @@ import {
   IUpdateVerzameling,
   IUpsertVerzameling,
 } from '@cswf/shared/api';
+import { IGebruiker } from '@cswf/shared/api';
 
 export class CreateVerzamelingDto implements ICreateVerzameling {
   @IsString()
   @IsNotEmpty()
   naam!: string;
 
-  @IsString()
   @IsNotEmpty()
   eigenaar!: string;
 

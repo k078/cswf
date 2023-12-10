@@ -21,7 +21,6 @@ export class VerzamelingUpdateComponent implements OnInit {
     ) {
       this.verzamelingForm = this.formBuilder.group({
         naam: ['', Validators.required],
-        eigenaar: ['', Validators.required],
         info: ['', Validators.required]
       });
     }
@@ -36,7 +35,6 @@ export class VerzamelingUpdateComponent implements OnInit {
             // Set the form values with the existing data
             this.verzamelingForm.patchValue({
               naam: verzameling.naam,
-              eigenaar: verzameling.eigenaar,
               info: verzameling.info
             });
           });

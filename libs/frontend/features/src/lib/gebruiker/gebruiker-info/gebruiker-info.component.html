@@ -1,0 +1,33 @@
+<div class="container" *ngIf="Gebruiker">
+  <h1>Gebruiker info</h1>
+  <div class="info">
+    <div class="details">
+      <div class="detail">
+        <span class="label">ID:</span>
+        <span class="value">{{ Gebruiker.id }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Gebruikersnaam</span>
+        <span class="value">{{ Gebruiker.gebruikersnaam }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Rol:</span>
+        <span class="value">{{ Gebruiker.rol }}</span>
+      </div>
+      <div class="detail">
+        <span class="label">Geboortedatum:</span>
+        <span class="value">{{ Gebruiker.geboortedatum | date : 'dd-MM-yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="buttons">
+    <button
+      class="btn btn-primary" [routerLink]="['/profile-update', Gebruiker.id]"
+    >
+      Aanpassen
+    </button>
+    <button class="btn btn-danger" (click)="verwijderGebruiker(Gebruiker.id)">Verwijder</button>
+  </div>
+</div>
+
+
