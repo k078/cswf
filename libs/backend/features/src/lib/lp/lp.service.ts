@@ -36,6 +36,7 @@ export class LpService {
   }
 
   async create(Lp: CreateLpDto): Promise<ILp> {
+    console.log('LpCreate aangeroepen in backend');
     const id = await this.getLowestId();
     const LpMetDatum = {
       ...Lp,

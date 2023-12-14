@@ -51,7 +51,9 @@
           {{ errorMessage }}
         </div>
       </div>
-      <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary mr-2">
-        Aanpassen
-      </button>
+      <div *ngIf="gebruiker.value?.gebruikersnaam===lp.gebruiker || isAdmin()">
+        <button [routerLink]="['/lp-update', lp.id]" class="btn btn-primary mr-2">
+          Aanpassen
+        </button>
+      </div>
     </div>

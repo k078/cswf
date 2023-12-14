@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { LpService } from '../lp.service';
-import { ILp, IVerzameling } from '@cswf/shared/api';
+import { ILp, IVerzameling, Rol } from '@cswf/shared/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VerzamelingService } from '../../verzameling/verzameling.service';
 import { AuthService } from '../../auth/auth.service';
@@ -19,6 +19,7 @@ export class LpDetailComponent implements OnInit {
   errorMessage: string | null = null;
   gebruiker = this.authService.currentUser$;
   subscription: Subscription | undefined = undefined;
+  gebruikerRol = this.authService.currentUser$.value?.rol;
 
   id: number | null = null;
 
@@ -48,6 +49,10 @@ export class LpDetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  isAdmin(): boolean {
+    return this.gebruikerRol === Rol.ADMIN;
   }
 
   // Voeg deze methode toe om een lp aan een verzameling toe te voegen

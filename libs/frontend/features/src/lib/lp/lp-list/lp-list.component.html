@@ -14,7 +14,9 @@
               <a [routerLink]="['/lp', lp.id]" class="btn btn-sm btn-outline-primary">Bekijk</a>
             </div>
             <small class="text-muted">{{ lp.id }}</small>
-            <button class="btn btn-sm btn-outline-danger" (click)="verwijderLp(lp.id)">Verwijder</button>
+            <div *ngIf="gebruiker===lp.gebruiker || isAdmin()">
+              <button class="btn btn-sm btn-outline-danger" (click)="verwijderLp(lp.id)">Verwijder</button>
+            </div>
 
           </div>
         </div>

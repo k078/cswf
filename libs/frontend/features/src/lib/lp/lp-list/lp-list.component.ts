@@ -4,6 +4,7 @@ import { ILp } from '@cswf/shared/api';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
+import { Rol } from '@cswf/shared/api';
 
 @Component({
   selector: 'cswf-lp-list',
@@ -15,6 +16,8 @@ export class LpListComponent implements OnInit, OnDestroy {
   subscription: Subscription | undefined = undefined;
   sortAscending = true;
   sortAscendingId = true;
+  gebruiker = this.authService.currentUser$.value?.gebruikersnaam;
+  gebruikerRol = this.authService.currentUser$.value?.rol;
 
   constructor(
     private lpService: LpService,
@@ -29,6 +32,10 @@ export class LpListComponent implements OnInit, OnDestroy {
         this.lps = results;
       });
     }
+  }
+
+  isAdmin(): boolean {
+    return this.gebruikerRol === Rol.ADMIN;
   }
 
   verwijderLp(id: number): void {

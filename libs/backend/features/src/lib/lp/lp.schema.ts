@@ -31,6 +31,9 @@ export class Lp implements ILp {
 
   @Prop({ required: true })
   img!: string;
+
+  @Prop({ required: true })
+  gebruiker!: string;
 }
 
 export const LpSchema = SchemaFactory.createForClass(Lp);

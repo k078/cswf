@@ -3,6 +3,7 @@ import { LpService } from '../lp.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Genre, ILp } from '@cswf/shared/api';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
   selector: 'cswf-lp-add',
@@ -11,11 +12,12 @@ import { Genre, ILp } from '@cswf/shared/api';
 })
 export class LpAddComponent {
   lpForm: FormGroup;
+  gebruiker = this.authService.currentUser$.value?.gebruikersnaam;
 
   // Create an array with enum values
   genres: Genre[] = Object.values(Genre).map(value => value as Genre);
 
-  constructor(private lpService: LpService, private router: Router, private formBuilder: FormBuilder) {
+  constructor(private lpService: LpService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
       this.lpForm = this.formBuilder.group({
         titel: ['', Validators.required],
         artiest: ['', Validators.required],
@@ -29,7 +31,10 @@ export class LpAddComponent {
 
   onSubmit(): void {
     if (this.lpForm.valid) {
-      const newLp: ILp = this.lpForm.value as ILp;
+      const newLp: ILp = {
+        ...this.lpForm.value,
+        gebruiker: this.gebruiker,
+      };
       this.lpService.createLp(newLp).subscribe(
         (addedLp: ILp) => {
           console.log('Toegevoegde LP:', addedLp);

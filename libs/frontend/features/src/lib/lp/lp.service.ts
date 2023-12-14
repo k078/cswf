@@ -4,6 +4,7 @@ import { map, catchError, tap } from 'rxjs/operators';
 import { ApiResponse, ILp } from '@cswf/shared/api';
 import { Injectable } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
+import { AuthService } from '../auth/auth.service';
 
 export const httpOptions = {
   headers: new HttpHeaders({
@@ -16,7 +17,9 @@ export class LpService {
   endpoint = 'https://cswf-backend.azurewebsites.net/api/lp';
   //endpoint = 'http://localhost:3000/api/lp';
 
-  constructor(private readonly http: HttpClient) {}
+  gebruiker = this.authService.currentUser$.value?.gebruikersnaam;
+  constructor(private readonly http: HttpClient, private authService: AuthService) {
+  }
 
   public list(options?: any): Observable<ILp[] | null> {
     console.log(`list ${this.endpoint}`);

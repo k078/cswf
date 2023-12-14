@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import {
   ICreateLp,
+  IGebruiker,
   IUpdateLp,
   IUpsertLp,
 } from '@cswf/shared/api';
@@ -41,6 +42,10 @@ export class CreateLpDto implements ICreateLp {
   @IsString()
   @IsNotEmpty()
   img!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gebruiker!: string;
 }
 
 
@@ -98,4 +103,8 @@ export class UpsertLpDto implements IUpsertLp{
   @IsString()
   @IsNotEmpty()
   img!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  gebruiker!: string;
 }
