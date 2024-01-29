@@ -1,0 +1,67 @@
+.container {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  color: #424242;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.details {
+  flex: 1;
+}
+
+.detail {
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #424242;
+}
+
+.value {
+  color: #007bff;
+}
+
+.image-container {
+  flex: 1;
+  margin-left: 20px;
+}
+
+.artiest-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Add some spacing between buttons */
+.buttons button {
+  margin-right: 10px;
+}
+
+/* Style the dropdown to match Bootstrap */
+.buttons select {
+  margin-right: 10px;
+}
+
+/* Add some top margin to separate buttons from LP details */
+.buttons {
+  margin-top: 20px;
+}
+
+/* Center the buttons horizontally */
+.buttons {
+  text-align: left;
+}
