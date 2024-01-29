@@ -1,10 +1,7 @@
 <div class="container">
   <div class="row justify-content-center align-items-center"> <!-- Center content horizontally and vertically -->
-    <div class="col-sm-6 col-md-8 col-lg-9">
-      <div>
             <h1 class=>Kalle van de Visser</h1>
             <p>Studentnummer: 2177927</p>
-      </div>
       <h1 id="aboutTitle">iVinyl</h1>
       <p>
         Deze applicatie is ontwikkeld voor het vak CSWPI vak
@@ -13,7 +10,6 @@
         iVinyl is een applicatie waarin in je een verzameling van vinyl platen kan bijhouden. Je kan als gebruiker een verzameling aanmaken waaraan je platen kunt toevoegen en verwijderen.
         Daarnaast kun je ook de verzameling verwijderen of aanpassen om eventuele info te veranderen.
       </p>
-    </div>
   </div>
 
   <h3>ERD</h3>
@@ -22,40 +18,41 @@
   <h3>Entiteiten</h3>
   <div class="row">
     <div class="col-sm-12 col-md-4">
-      <p>Label</p>
-      <ul>
-        <li>naam: string</li>
-        <li>oprichting: DateTime</li>
-        <li>land: string</li>
-        <li>genre: Genre</li>
-      </ul>
-    </div>
-    <div class="col-sm-12 col-md-4">
       <p>Artiest</p>
       <ul>
+        <li>id: int</li>
         <li>naam: string</li>
+        <li>land: int</li>
         <li>leeftijd: int</li>
-        <li>land: string</li>
         <li>bio: string</li>
       </ul>
     </div>
     <div class="col-sm-12 col-md-4">
       <p>Genre</p>
       <ul>
-        <li>House, Trance, Rock, Pop</li>
+        <li>House</li>
+        <li>Trance</li>
+        <li>Rock</li>
+        <li>Pop</li>
+        <li>Minimal</li>
+        <li>Jazz</li>
       </ul>
     </div>
     <div class="col-sm-12 col-md-4">
       <p>Gebruiker</p>
       <ul>
+        <li>id: int</li>
         <li>gebruikersnaam: string</li>
-        <li>wachtwoord: number</li>
-        <li>geboorteDatum: string</li>
+        <li>wachtwoord: string</li>
+        <li>rol: Rol</li>
+        <li>geboorteDatum: DateTime</li>
       </ul>
     </div>
     <div class="col-sm-12 col-md-4">
       <p>Verzameling</p>
       <ul>
+        <li>id: int</li>
+        <li>naam: string</li>
         <li>eigenaar: Gebruiker</li>
         <li>oprichting: DateTime</li>
         <li>info: string</li>
@@ -64,10 +61,13 @@
     <div class="col-sm-12 col-md-4">
       <p>LP</p>
       <ul>
+        <li>id: int</li>
         <li>titel: string</li>
         <li>artiest: Artiest</li>
-        <li>release: int</li>
+        <li>release: DateTime</li>
+        <li>land: string</li>
         <li>genre: Genre</li>
+        <li>img: string</li>
       </ul>
     </div>
   </div>
@@ -93,7 +93,7 @@
                               <li>De verzameling heeft een naam</li>
                               <li>De verzameling heeft een eigenaar</li>
                               <li>De verzameling heeft een oprichtingsdatum</li>
-                              <li>De verzameling heeft een info</li>
+                              <li>De verzameling heeft info</li>
                           </ul>
                       </td>
                       <td class="td-underlined">
@@ -253,7 +253,73 @@
                         </ul>
                     </td>
                   </tr>
-
+                  <tr>
+                    <td class="td-css">11.</td>
+                    <td class="td-underlined">
+                      Als gebruiker wil ik een artiest kunnen toevoegen zodat ik een artiest kan meegeven aan een LP.
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>De artiest wordt toegevoegd aan de lijst aan artiesten</li>
+                      </ul>
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>Must</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-css">12.</td>
+                    <td class="td-underlined">
+                      Als gebruiker wil ik een artiest kunnen verwijderen zodat ik een eventuele fout kan weghalen.
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>De artiest wordt verwijderd uit de database/lijst</li>
+                        <li>De artiest kan alleen worden verwijderd door de gebruiker die de artiest heeft toegevoegd</li>
+                      </ul>
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>Must</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-css">13.</td>
+                    <td class="td-underlined">
+                      Als gebruiker wil ik een artiest kunnen aanpassen zodat ik de info van een artiest kan bijwerken.
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>De artiest wordt aangepast</li>
+                        <li>De artiest kan alleen worden aangepast door een aanmaker van de artiest</li>
+                      </ul>
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>Must</li>
+                      </ul>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="td-css">14.</td>
+                    <td class="td-underlined">
+                      Als gebruiker wil ik informatie kunnen zien over een artiest zodat ik meer te weten kom over de artiest.
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>De informatie over de artiest wordt getoond</li>
+                        <li>De afbeelding van de artiest wordt getoond</li>
+                      </ul>
+                    </td>
+                    <td class="td-underlined">
+                      <ul>
+                        <li>Must</li>
+                      </ul>
+                    </td>
+                  </tr>
               </tbody>
           </table>
       </div>

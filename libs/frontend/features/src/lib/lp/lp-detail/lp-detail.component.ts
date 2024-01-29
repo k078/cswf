@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { VerzamelingService } from '../../verzameling/verzameling.service';
 import { AuthService } from '../../auth/auth.service';
 import { Subscription } from 'rxjs';
+import { ArtiestService } from '../../artiest/artiest.service';
 
 @Component({
   selector: 'cswf-lp-detail',
@@ -22,13 +23,15 @@ export class LpDetailComponent implements OnInit {
   gebruikerRol = this.authService.currentUser$.value?.rol;
 
   id: number | null = null;
+  artiestId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private lpService: LpService,
-    private verzamelingService: VerzamelingService, // Voeg deze lijn toe
+    private verzamelingService: VerzamelingService,
     private router : Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private artiestService: ArtiestService
   ) {}
 
 
@@ -39,7 +42,6 @@ export class LpDetailComponent implements OnInit {
       if (id) {
         this.lpService.read(id).subscribe((lp) => {
           this.lp = lp;
-
           this.subscription = this.verzamelingService.list().subscribe(
             (results) => {
               console.log(`results: ${results}`);

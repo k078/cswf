@@ -1,26 +1,54 @@
 <form [formGroup]="lpForm">
   <label for="titel">Titel:</label>
   <input type="text" class="form-control" id="titel" formControlName="titel">
+  <div class="melding" *ngIf="lpForm.get('titel')?.hasError('required') && lpForm.get('titel')?.touched">
+    Titel is vereist.
+  </div>
 
   <label for="artiest">Artiest:</label>
-  <input type="text" class="form-control" id="artiest" formControlName="artiest">
+  <select class="form-control" id="artiest" formControlName="artiest">
+    <option *ngFor="let artiest of artiesten" [value]="artiest.naam">{{ artiest.naam }}</option>
+  </select>
+  <div class="melding" *ngIf="lpForm.get('artiest')?.hasError('required') && lpForm.get('artiest')?.touched">
+    Artiest is vereist.
+  </div>
+
 
   <label for="release">Release:</label>
   <input type="date" class="form-control" id="release" formControlName="release">
+  <div class="melding" *ngIf="lpForm.get('release')?.hasError('required') && lpForm.get('release')?.touched">
+    Release is vereist.
+  </div>
+
 
   <label for="land">Land:</label>
   <input type="text" class="form-control" id="land" formControlName="land">
+  <div class="melding" *ngIf="lpForm.get('land')?.hasError('required') && lpForm.get('land')?.touched">
+    Land is vereist.
+  </div>
+
 
   <label for="label">Label:</label>
   <input type="text" class="form-control" id="label" formControlName="label">
+  <div class="melding" *ngIf="lpForm.get('label')?.hasError('required') && lpForm.get('label')?.touched">
+    Label is vereist.
+  </div>
+
 
   <label for="genre">Genre:</label>
   <select class="form-control" id="genre" formControlName="genre">
     <option *ngFor="let genre of genres" [value]="genre">{{ genre }}</option>
   </select>
+  <div class="melding" *ngIf="lpForm.get('label')?.hasError('required') && lpForm.get('label')?.touched">
+    Genre is vereist.
+  </div>
+
 
   <label for="img">Afbeelding URL:</label>
   <input type="text" class="form-control" id="img" formControlName="img">
+  <div class="melding" *ngIf="lpForm.get('img')?.hasError('required') && lpForm.get('img')?.touched">
+    Afbeelding URL is vereist.
+  </div>
 
-  <button type="submit" (click)="onSubmit()" class="btn btn-primary">Opslaan</button>
+  <button type="submit" (click)="onSubmit()" class="btn btn-primary" [disabled]="!lpForm.valid">Opslaan</button>
 </form>

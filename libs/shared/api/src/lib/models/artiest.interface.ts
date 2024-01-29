@@ -7,5 +7,10 @@ export interface IArtiest {
     land:string;
     leeftijd:number;
     bio:string;
-    lps: ILp[];
+    img:string;
+    gebruiker:string;
 }
+
+export type ICreateArtiest = Pick<IArtiest, 'naam' | 'land' | 'leeftijd' | 'bio' | 'img' | 'gebruiker'>;
+export type IUpdateArtiest = Partial<Omit<IArtiest, 'id'>>;
+export type IUpsertArtiest=IArtiest;

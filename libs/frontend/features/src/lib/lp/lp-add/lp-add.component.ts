@@ -2,8 +2,9 @@ import { Component } from '@angular/core';
 import { LpService } from '../lp.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Genre, ILp } from '@cswf/shared/api';
+import { Genre, IArtiest, ILp } from '@cswf/shared/api';
 import { AuthService } from '../../auth/auth.service';
+import { ArtiestService } from '../../artiest/artiest.service';
 
 @Component({
   selector: 'cswf-lp-add',
@@ -13,11 +14,11 @@ import { AuthService } from '../../auth/auth.service';
 export class LpAddComponent {
   lpForm: FormGroup;
   gebruiker = this.authService.currentUser$.value?.gebruikersnaam;
-
+  artiesten: IArtiest[] | null = [];
   // Create an array with enum values
   genres: Genre[] = Object.values(Genre).map(value => value as Genre);
 
-  constructor(private lpService: LpService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
+  constructor(private artiestService:ArtiestService, private lpService: LpService, private router: Router, private formBuilder: FormBuilder, private authService: AuthService) {
       this.lpForm = this.formBuilder.group({
         titel: ['', Validators.required],
         artiest: ['', Validators.required],
@@ -26,6 +27,9 @@ export class LpAddComponent {
         label: ['', Validators.required],
         genre: ['', Validators.required],
         img: ['', Validators.required],
+      });
+      this.artiestService.list().subscribe((artiesten) => {
+        this.artiesten = artiesten;
       });
     }
 

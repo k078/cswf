@@ -1,0 +1,42 @@
+.container {
+  margin: 0 auto;
+  background-color: #f8f9fa; /* Zachte grijze achtergrond */
+  padding: 20px;
+}
+
+.card {
+  border: 1px solid #dee2e6; /* Lichtgrijze kaartrand */
+  margin: 1rem;
+  width: 300px;
+  transition: transform 0.3s ease; /* Voeg een vloeiende overgang toe */
+}
+
+.card:hover {
+  transform: scale(1.05); /* Maak de kaart iets groter bij hover */
+}
+
+.card-header {
+  background-color: #ffffff;
+  border: transparent;
+  border-bottom: 1px transparent; /* Lichtgrijze lijn onder header */
+}
+
+.card-body {
+  padding: 1rem;
+  background-color: #ffffff;
+  color: #495057;
+}
+
+.btn-outline-primary,
+.btn-outline-danger {
+  transition: background-color 0.3s ease; /* Voeg een vloeiende overgang toe aan de knoppen */
+}
+
+.btn-outline-danger:hover{
+  background-color: #dc3545; /* Donkerder rood voor de gevaarlijke knop */
+  color: #ffffff; /* Witte tekst voor betere leesbaarheid op de donkere achtergrond */
+}
+.btn-outline-primary:hover {
+  background-color: #007bff; /* Donkerder blauw voor de primaire knop, rood voor de gevaarlijke knop */
+  color: #ffffff; /* Witte tekst voor betere leesbaarheid op de donkere achtergrond */
+}

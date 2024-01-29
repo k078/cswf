@@ -21,6 +21,11 @@ import { AuthService } from './auth/auth.service';
 import { GebruikerInfoComponent } from './gebruiker/gebruiker-info/gebruiker-info.component';
 import { GebruikerService } from './gebruiker/gebruiker.service';
 import { GebruikerUpdateComponent } from './gebruiker/gebruiker-update/gebruiker-update.component';
+import { ArtiestAddComponent } from './artiest/artiest-add/artiest-add.component';
+import { ArtiestDetailComponent } from './artiest/artiest-detail/artiest-detail.component';
+import { ArtiestListComponent } from './artiest/artiest-list/artiest-list.component';
+import { ArtiestUpdateComponent } from './artiest/artiest-update/artiest-update.component';
+import { ArtiestService } from './artiest/artiest.service';
 
 @NgModule({
   imports: [
@@ -44,9 +49,20 @@ import { GebruikerUpdateComponent } from './gebruiker/gebruiker-update/gebruiker
     LoginComponent,
     RegisterComponent,
     GebruikerInfoComponent,
-    GebruikerUpdateComponent
+    GebruikerUpdateComponent,
+    ArtiestAddComponent,
+    ArtiestDetailComponent,
+    ArtiestListComponent,
+    ArtiestUpdateComponent,
   ],
-  providers: [VerzamelingService, LpService, DatePipe, AuthService, GebruikerService],
+  providers: [
+    VerzamelingService,
+    LpService,
+    DatePipe,
+    AuthService,
+    GebruikerService,
+    ArtiestService,
+  ],
   exports: [
     VerzamelingListComponent,
     VerzamelingDetailComponent,
@@ -60,7 +76,11 @@ import { GebruikerUpdateComponent } from './gebruiker/gebruiker-update/gebruiker
     LoginComponent,
     RegisterComponent,
     GebruikerInfoComponent,
-    GebruikerUpdateComponent
+    GebruikerUpdateComponent,
+    ArtiestAddComponent,
+    ArtiestDetailComponent,
+    ArtiestListComponent,
+    ArtiestUpdateComponent,
   ],
 })
 export class FeaturesModule {}

@@ -1,5 +1,5 @@
 import { Logger, Module } from '@nestjs/common';
-import { VerzamelingModule } from '@cswf/backend/features';
+import { ArtiestModule, VerzamelingModule } from '@cswf/backend/features';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LpModule } from '@cswf/backend/features';
@@ -17,7 +17,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       return connection;
     }
   }
-  ), VerzamelingModule, LpModule, GebruikerModule],
+  ), VerzamelingModule, LpModule, GebruikerModule, ArtiestModule],
   controllers: [AppController],
   providers: [AppService],
 })

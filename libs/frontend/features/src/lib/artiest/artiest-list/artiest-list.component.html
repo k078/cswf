@@ -1,0 +1,33 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-4" *ngFor="let artiest of artiesten">
+      <div class="card">
+        <div class="card-header">
+          <img class="card-img-top rounded-circle" [src]="artiest.img" alt="{{ artiest.naam }}">
+        </div>
+        <div class="card-body">
+          <h6 class="card-title">{{ artiest.naam }}</h6>
+          <p class="card-text">{{ artiest.land }}</p>
+          <p class="card-text">{{ artiest.leeftijd }}</p>
+          <p class="card-text">{{ artiest.bio }}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="btn-group">
+              <a [routerLink]="['/artiest', artiest.id]" class="btn btn-sm btn-outline-primary">Bekijk</a>
+            </div>
+            <small class="text-muted">{{ artiest.id }}</small>
+            <div *ngIf="gebruiker===artiest.gebruiker || isAdmin()">
+              <button class="btn btn-sm btn-outline-danger" (click)="verwijderArtiest(artiest.id)">Verwijder</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <button [routerLink]="['/artiest-add']" class="btn btn-primary">Voeg artiest Toe</button>
+    </div>
+  </div>
+</div>
+

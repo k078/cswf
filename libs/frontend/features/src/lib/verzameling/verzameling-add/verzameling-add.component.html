@@ -1,13 +1,13 @@
 <form [formGroup]="verzamelingForm" (ngSubmit)="onSubmit()">
   <label for="naam">Naam:</label>
   <input type="text" class="form-control" id="naam" formControlName="naam">
-  <div *ngIf="verzamelingForm?.get('naam')?.hasError('required') && verzamelingForm?.get('naam')?.touched">
+  <div class="melding" *ngIf="verzamelingForm?.get('naam')?.hasError('required') && verzamelingForm?.get('naam')?.touched">
     Naam is vereist.
   </div>
 
   <label for="info">Informatie:</label>
   <input type="text" class="form-control" id="info" formControlName="info">
-  <div *ngIf="verzamelingForm.get('info')?.hasError('required') && verzamelingForm.get('info')?.touched">
+  <div class="melding" *ngIf="verzamelingForm.get('info')?.hasError('required') && verzamelingForm.get('info')?.touched">
     Informatie is vereist.
   </div>
 

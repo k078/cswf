@@ -1,0 +1,37 @@
+<div class="container" *ngIf="artiest">
+  <h1 class="header">Artiest Informatie</h1>
+  <div class="info">
+    <div class="details">
+      <div class="detail">
+        <span class="id">ID: </span>
+        <span class="value">{{ artiest.id }}</span>
+      </div>
+      <div class="detail">
+        <span class="naam">Naam: </span>
+        <span class="value">{{ artiest.naam }}</span>
+      </div>
+      <div class="detail">
+        <span class="land">Land: </span>
+        <span class="value">{{ artiest.land }}</span>
+      </div>
+      <div class="detail">
+        <span class="number" class="leeftijd">Leeftijd: </span>
+        <span class="value">{{ artiest.leeftijd }}</span>
+      </div>
+      <div class="detail">
+        <span class="bio">Bio: </span>
+        <span class="value">{{ artiest.bio }}</span>
+      </div>
+    <div class="image-container">
+      <img class="artiest-image" [src]="artiest.img" alt="{{ artiest.naam }}" />
+    </div>
+  </div>
+      <div class="buttons mt-3">
+      </div>
+      <div *ngIf="gebruiker.value?.gebruikersnaam===artiest.gebruiker || isAdmin()">
+        <button [routerLink]="['/artiest-update', artiest.id]" class="btn btn-primary mr-2">
+          Aanpassen
+        </button>
+      </div>
+    </div>
+

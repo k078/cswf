@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LpService } from '../lp.service'; // Update met de juiste service
+import { LpService } from '../lp.service';
 import { Genre, ILp } from '@cswf/shared/api';
 import { DatePipe } from '@angular/common';
 
@@ -36,7 +36,7 @@ export class LpUpdateComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
-      
+
       if (id) {
         this.lpService.read(id).subscribe((lp) => {
           this.lp = lp;

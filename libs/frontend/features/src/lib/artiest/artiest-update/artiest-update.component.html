@@ -1,0 +1,33 @@
+<form [formGroup]="artiestForm">
+  <label for="naam">Naam:</label>
+  <input type="text" class="form-control" id="naam" formControlName="naam">
+  <div class="melding" *ngIf="artiestForm.get('naam')?.hasError('required') && artiestForm.get('naam')?.touched">
+    Naam is vereist.
+  </div>
+
+  <label for="land">Land:</label>
+  <input type="text" class="form-control" id="land" formControlName="land">
+  <div class="melding" *ngIf="artiestForm.get('land')?.hasError('required') && artiestForm.get('land')?.touched">
+    Land is vereist.
+  </div>
+
+  <label for="leeftijd">Leeftijd:</label>
+  <input type="number" class="form-control" id="leeftijd" formControlName="leeftijd">
+  <div class="melding" *ngIf="artiestForm.get('leetijd')?.hasError('required') && artiestForm.get('leeftijd')?.touched">
+    Leeftijd is vereist.
+  </div>
+
+  <label for="bio">Bio:</label>
+  <input type="text" class="form-control" id="bio" formControlName="bio">
+  <div class="melding" *ngIf="artiestForm.get('bio')?.hasError('required') && artiestForm.get('bio')?.touched">
+    Bio is vereist.
+  </div>
+
+  <label for="img">Afbeelding URL:</label>
+  <input type="text" class="form-control" id="img" formControlName="img">
+  <div class="melding" *ngIf="artiestForm.get('img')?.hasError('required') && artiestForm.get('img')?.touched">
+    Afbeelding URL is vereist.
+  </div>
+
+  <button type="submit" (click)="onSubmit()" class="btn btn-primary" [disabled]="!artiestForm.valid">Opslaan</button>
+</form>

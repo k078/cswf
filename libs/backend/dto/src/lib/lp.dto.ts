@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 import {
   ICreateLp,
-  IGebruiker,
   IUpdateLp,
   IUpsertLp,
 } from '@cswf/shared/api';
