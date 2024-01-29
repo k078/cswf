@@ -2,9 +2,15 @@
 
   <label for="wachtwoord">Wachtwoord:</label>
   <input type="password" class="form-control" id="wachtwoord" formControlName="wachtwoord">
+  <div class="melding" *ngIf="gebruikerForm.get('wachtwoord')?.hasError('required') && gebruikerForm.get('wachtwoord')?.touched">
+    Wachtwoord is vereist.
+  </div>
 
   <label for="geboortedatum">Geboortedatum:</label>
   <input type="date" class="form-control" id="geboortedatum" formControlName="geboortedatum">
+  <div class="melding" *ngIf="gebruikerForm.get('geboortedatum')?.hasError('required') && gebruikerForm.get('geboortedatum')?.touched">
+    Geboortedatum is vereist.
+  </div>
 
   <button type="submit" (click)="onSubmit()" class="btn btn-primary">Opslaan</button>
 </form>

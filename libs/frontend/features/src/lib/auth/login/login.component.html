@@ -1,13 +1,13 @@
 <form [formGroup]="loginForm">
   <label for="titel">Gebruikersnaam:</label>
   <input type="text" class="form-control" id="username" formControlName="username">
-  <div class="error">
-    {{ errorMessage }}
+  <div class="melding" *ngIf="loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched">
+    Gebruikersnaam is vereist.
   </div>
   <label for="artiest">Wachtwoord:</label>
   <input type="password" class="form-control" id="password" formControlName="password">
-  <div class="error">
-    {{ errorMessagePassword }}
+  <div class="melding" *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+    Wachtwoord is vereist.
   </div>
   <button type="submit" (click)="login()" class="btn btn-primary">inloggen</button>
 </form>

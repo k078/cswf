@@ -1,22 +1,21 @@
 <form [formGroup]="registerForm">
   <label for="gebruikersnaam">Gebruikersnaam:</label>
   <input type="text" class="form-control" id="gebruikersnaam" formControlName="gebruikersnaam">
-  <div class="error">
-    {{ errorMessageGebruikersnaam }}
+  <div class="melding" *ngIf="registerForm.get('gebruikersnaam')?.hasError('required') && registerForm.get('gebruikersnaam')?.touched">
+    Gebruikersnaam is vereist.
   </div>
 
   <label for="wachtwoord">Wachtwoord:</label>
   <input type="password" class="form-control" id="wachtwoord" formControlName="wachtwoord">
-  <div class="error">
-    {{ errorMessageWachtwoord }}
+  <div class="melding" *ngIf="registerForm.get('wachtwoord')?.hasError('required') && registerForm.get('wachtwoord')?.touched">
+    Wachtwoord is vereist.
   </div>
 
   <label for="geboortedatum">Geboortedatum:</label>
   <input type="date" class="form-control" id="geboortedatum" formControlName="geboortedatum">
-  <div class="error">
-    {{ errorMessageGeboortedatum }}
+  <div class="melding" *ngIf="registerForm.get('geboortedatum')?.hasError('required') && registerForm.get('geboortedatum')?.touched">
+    Geboortedatum is vereist.
   </div>
-
 
  <div class="error">
     {{ errorMessage }}
