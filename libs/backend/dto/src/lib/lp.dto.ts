@@ -5,6 +5,7 @@ import {
   IsDate,
   IsDateString,
   IsEnum,
+  IsOptional,
 } from 'class-validator';
 import {
   ICreateLp,
@@ -50,25 +51,25 @@ export class CreateLpDto implements ICreateLp {
 
 export class UpdateLpDto implements IUpdateLp{
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   titel?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   artiest?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsDate()
   release?: Date;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   land?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   label?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   genre?: Genre;
 }
 

@@ -1,12 +1,11 @@
-import { Controller, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus } from '@nestjs/common';
 import { VerzamelingService } from './verzameling.service';
-import { Get, Param, Post, Body } from '@nestjs/common';
 import { IVerzameling } from '@cswf/shared/api';
-import { CreateVerzamelingDto } from '@cswf/backend/dto';
+import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
 
-@Controller('Verzameling')
+@Controller('verzameling')
 export class VerzamelingController {
-    constructor(private verzamelingService: VerzamelingService) {}
+    constructor(private readonly verzamelingService: VerzamelingService) {}
 
     @Get('')
     async getAll(): Promise<IVerzameling[]> {
@@ -14,39 +13,70 @@ export class VerzamelingController {
     }
 
     @Get(':id')
-    async getOne(@Param('id') id: number): Promise<IVerzameling | null> {
-        return await this.verzamelingService.findOne(id);
+    async getOne(@Param('id') id: number): Promise<IVerzameling> {
+        const verzameling = await this.verzamelingService.findOne(id);
+        if (!verzameling) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Verzameling with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return verzameling;
     }
 
     @Post('add-to-verzameling/:id/:verzamelingId')
-  async addToVerzameling(
-    @Param('id') lpId: string,
-    @Param('verzamelingId') verzamelingId: string,
-  ): Promise<string> {
-    const result = await this.verzamelingService.addToVerzameling(
-      parseInt(lpId, 10),
-      parseInt(verzamelingId, 10),
-    );
-    return result;
-  }
+    async addToVerzameling(
+        @Param('id') lpId: string,
+        @Param('verzamelingId') verzamelingId: string,
+    ): Promise<{ message: string }> {
+        const result = await this.verzamelingService.addToVerzameling(
+            parseInt(lpId, 10),
+            parseInt(verzamelingId, 10),
+        );
+        return { message: result };
+    }
 
     @Post('')
     async create(@Body() data: CreateVerzamelingDto): Promise<IVerzameling> {
-        console.log('Received data:', data);
         return this.verzamelingService.create(data);
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: number): Promise<IVerzameling | null> {
-      return this.verzamelingService.delete(id);
+    async delete(@Param('id') id: number): Promise<{ message: string }> {
+        const result = await this.verzamelingService.delete(id);
+        if (!result) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Verzameling with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return { message: `Verzameling with id ${id} deleted successfully` };
     }
-
 
     @Put(':id')
     async update(
         @Param('id') id: number,
-        @Body() data: IVerzameling
-    ): Promise<IVerzameling | null> {
-        return await this.verzamelingService.update(id, data);
+        @Body() data: UpdateVerzamelingDto
+    ): Promise<IVerzameling> {
+        const result = await this.verzamelingService.update(id, data);
+        if (!result) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Verzameling with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return result;
     }
 }

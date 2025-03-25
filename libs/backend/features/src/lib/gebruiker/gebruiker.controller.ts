@@ -1,47 +1,99 @@
-import { Controller, Delete, Put } from '@nestjs/common';
-import { Get, Param, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus } from '@nestjs/common';
 import { IGebruiker } from '@cswf/shared/api';
 import { GebruikerService } from './gebruiker.service';
-import { CreateGebruikerDto } from '@cswf/backend/dto';
+import { CreateGebruikerDto, UpdateGebruikerDto } from '@cswf/backend/dto';
 
-@Controller('Gebruiker')
+@Controller('gebruiker')
 export class GebruikerController {
-    constructor(private GebruikerService: GebruikerService) {}
+    constructor(private readonly gebruikerService: GebruikerService) {}
 
     @Get('')
     async findAll(): Promise<IGebruiker[]> {
-        return this.GebruikerService.findAll();
+        return this.gebruikerService.findAll();
     }
 
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<IGebruiker | null> {
-        return this.GebruikerService.findOne(id);
+    async findOne(@Param('id') id: number): Promise<IGebruiker> {
+        const gebruiker = await this.gebruikerService.findOne(id);
+        if (!gebruiker) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Gebruiker with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return gebruiker;
     }
 
     @Post('')
-    async create(@Body() data: IGebruiker): Promise<IGebruiker> {
-        return this.GebruikerService.create(data);
+    async create(@Body() data: CreateGebruikerDto): Promise<IGebruiker> {
+        return this.gebruikerService.create(data);
     }
 
     @Post('login')
-    async login(@Body() gebruiker: CreateGebruikerDto): Promise<IGebruiker | null> {
-        return this.GebruikerService.login(gebruiker.gebruikersnaam, gebruiker.wachtwoord);
+    async login(@Body() body: { gebruikersnaam: string, wachtwoord: string }): Promise<IGebruiker> {
+        const gebruiker = await this.gebruikerService.login(body.gebruikersnaam, body.wachtwoord);
+        if (!gebruiker) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: 'Invalid credentials'
+                },
+                HttpStatus.UNAUTHORIZED
+            );
+        }
+        return gebruiker;
     }
 
     @Post('logout/:id')
-    async logout(@Param('id') id: number): Promise<void> {
-        await this.GebruikerService.logout(id);
+    async logout(@Param('id') id: number): Promise<{ message: string }> {
+        const success = await this.gebruikerService.logout(id);
+        if (!success) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Gebruiker with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return { message: 'Successfully logged out' };
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: number): Promise<IGebruiker | null> {
-        return this.GebruikerService.delete(id);
+    async delete(@Param('id') id: number): Promise<{ message: string }> {
+        const result = await this.gebruikerService.delete(id);
+        if (!result) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Gebruiker with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return { message: `Gebruiker with id ${id} deleted successfully` };
     }
 
     @Put(':id')
-    async update(@Param('id') id: number, @Body() data: IGebruiker): Promise<IGebruiker | null> {
-        return this.GebruikerService.update(id, data);
+    async update(@Param('id') id: number, @Body() data: UpdateGebruikerDto): Promise<IGebruiker> {
+        const result = await this.gebruikerService.update(id, data);
+        if (!result) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `Gebruiker with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return result;
     }
 }
-
-

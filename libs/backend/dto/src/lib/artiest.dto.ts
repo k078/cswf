@@ -3,6 +3,7 @@ import {
   IsString,
   IsNumber,
   IsDate,
+  IsOptional
 } from 'class-validator';
 import {
   ICreateArtiest,
@@ -39,27 +40,27 @@ export class CreateArtiestDto implements ICreateArtiest {
 
 export class UpdateArtiestDto implements IUpdateArtiest{
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   naam?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   land?: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   leeftijd?: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   bio?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   img?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   gebruiker?: string;
 }
 

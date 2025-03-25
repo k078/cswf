@@ -25,19 +25,19 @@ export class CreateGebruikerDto implements ICreateGebruiker {
 }
 
 export class UpdateGebruikerDto implements IUpdateGebruiker {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   gebruikersnaam?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   wachtwoord?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   rol?: Rol;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsDate()
   geboortedatum?: Date;
 }

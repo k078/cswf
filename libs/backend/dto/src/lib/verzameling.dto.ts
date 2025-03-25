@@ -28,18 +28,18 @@ export class CreateVerzamelingDto implements ICreateVerzameling {
 
 export class UpdateVerzamelingDto implements IUpdateVerzameling{
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   naam?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   eigenaar?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsDate()
   oprichting?: Date;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   info?: string;
 }
 

@@ -1,12 +1,11 @@
-import { Controller, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus } from '@nestjs/common';
 import { LpService } from './lp.service';
-import { Get, Param, Post, Body } from '@nestjs/common';
 import { ILp } from '@cswf/shared/api';
-import { CreateLpDto } from '@cswf/backend/dto';
+import { CreateLpDto, UpdateLpDto } from '@cswf/backend/dto';
 
-@Controller('Lp')
+@Controller('lp')
 export class LpController {
-    constructor(private lpService: LpService) {}
+    constructor(private readonly lpService: LpService) {}
 
     @Get('')
     async getAll(): Promise<ILp[]> {
@@ -14,27 +13,58 @@ export class LpController {
     }
 
     @Get(':id')
-    async getOne(@Param('id') id: number): Promise<ILp | null> {
-        return await this.lpService.findOne(id);
+    async getOne(@Param('id') id: number): Promise<ILp> {
+        const lp = await this.lpService.findOne(id);
+        if (!lp) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `LP with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return lp;
     }
 
     @Post('')
     async create(@Body() data: CreateLpDto): Promise<ILp> {
-        console.log('Received data:', data);
         return this.lpService.create(data);
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: number): Promise<ILp | null> {
-      return this.lpService.delete(id);
+    async delete(@Param('id') id: number): Promise<{ message: string }> {
+        const result = await this.lpService.delete(id);
+        if (!result) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `LP with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return { message: `LP with id ${id} deleted successfully` };
     }
-
 
     @Put(':id')
     async update(
         @Param('id') id: number,
-        @Body() data: ILp
-    ): Promise<ILp | null> {
-        return await this.lpService.update(id, data);
+        @Body() data: UpdateLpDto
+    ): Promise<ILp> {
+        const result = await this.lpService.update(id, data);
+        if (!result) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.NOT_FOUND,
+                    error: 'Not Found',
+                    message: `LP with id ${id} not found`
+                },
+                HttpStatus.NOT_FOUND
+            );
+        }
+        return result;
     }
 }
