@@ -14,8 +14,8 @@ export const httpOptions = {
 
 @Injectable()
 export class ArtiestService {
-  endpoint = 'https://cswf-backend.azurewebsites.net/api/artiest';
-  //endpoint = 'http://localhost:3000/api/artiest';
+  //endpoint = 'https://cswf-backend.azurewebsites.net/api/artiest';
+  endpoint = 'http://localhost:3000/api/artiest';
 
   gebruiker = this.authService.currentUser$.value?.gebruikersnaam;
   constructor(private readonly http: HttpClient, private authService: AuthService) {

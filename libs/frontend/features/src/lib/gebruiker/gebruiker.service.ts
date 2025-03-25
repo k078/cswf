@@ -17,8 +17,8 @@ export const httpOptions = {
 
 @Injectable()
 export class GebruikerService {
-  //endpoint = 'http://localhost:3000/api/gebruiker';
-  endpoint = 'https://cswf-backend.azurewebsites.net/api/gebruiker';
+  endpoint = 'http://localhost:3000/api/gebruiker';
+  //endpoint = 'https://cswf-backend.azurewebsites.net/api/gebruiker';
   user: IGebruiker[] | null = null;
 
   constructor(

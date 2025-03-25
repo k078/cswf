@@ -14,8 +14,8 @@ export const httpOptions = {
 
 @Injectable()
 export class LpService {
-  endpoint = 'https://cswf-backend.azurewebsites.net/api/lp';
-  //endpoint = 'http://localhost:3000/api/lp';
+  //endpoint = 'https://cswf-backend.azurewebsites.net/api/lp';
+  endpoint = 'http://localhost:3000/api/lp';
 
   gebruiker = this.authService.currentUser$.value?.gebruikersnaam;
   constructor(private readonly http: HttpClient, private authService: AuthService) {
