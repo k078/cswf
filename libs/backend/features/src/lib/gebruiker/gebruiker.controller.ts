@@ -10,13 +10,26 @@ import { CustomRequest } from '../auth/custom-request.interface';
 export class GebruikerController {
     constructor(private readonly gebruikerService: GebruikerService) {}
 
+    @UseGuards(AuthGuard)
     @Get('')
-    async findAll(): Promise<IGebruiker[]> {
-        return this.gebruikerService.findAll();
+    async findAll(@Req() request: CustomRequest): Promise <IGebruiker[] | null> {
+        const gebruikerId = request.gebruikerId;
+        if (!gebruikerId) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.BAD_REQUEST,
+                    error: 'Bad Request',
+                    message: 'gebruikerId is required',
+                },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        return this.gebruikerService.findAll(gebruikerId);
     }
 
+    @UseGuards(AuthGuard)
     @Get(':id')
-    async findOne(@Param('id') id: number): Promise<IGebruiker> {
+    async findOne(@Param('id') id: string): Promise<IGebruiker> {
         const gebruiker = await this.gebruikerService.findOne(id);
         if (!gebruiker) {
             throw new HttpException(
@@ -31,6 +44,7 @@ export class GebruikerController {
         return gebruiker;
     }
 
+    @UseGuards(AuthGuard)
     @Post('')
     async create(@Body() data: CreateGebruikerDto): Promise<IGebruiker> {
         return this.gebruikerService.create(data);
@@ -52,10 +66,10 @@ export class GebruikerController {
         return gebruiker;
     }
 
-    @UseGuards(AuthGuard) // Zorg ervoor dat de AuthGuard wordt gebruikt
+    @UseGuards(AuthGuard)
     @Post('logout')
     async logout(@Req() request: CustomRequest): Promise<{ message: string }> {
-        const gebruikerId = request.gebruikerId; // Haal gebruikerId uit het request-object
+        const gebruikerId = request.gebruikerId;
         const authorizationHeader = request.headers.authorization;
 
         if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
@@ -69,7 +83,7 @@ export class GebruikerController {
             );
         }
 
-        const token = authorizationHeader.split(' ')[1]; // Haal het token uit de Authorization-header
+        const token = authorizationHeader.split(' ')[1];
 
         if (!gebruikerId) {
             throw new HttpException(
@@ -95,9 +109,11 @@ export class GebruikerController {
         return { message: 'Successfully logged out' };
     }
 
+    @UseGuards(AuthGuard)
     @Delete(':id')
-    async delete(@Param('id') id: number): Promise<{ message: string }> {
-        const result = await this.gebruikerService.delete(id);
+    async delete(@Req() request: CustomRequest, @Param('id') id: number): Promise<{ message: string }> {
+      const gebruikerId = request.gebruikerId as string;
+      const result = await this.gebruikerService.delete(gebruikerId, id);
         if (!result) {
             throw new HttpException(
                 {
@@ -111,9 +127,11 @@ export class GebruikerController {
         return { message: `Gebruiker with id ${id} deleted successfully` };
     }
 
+    @UseGuards(AuthGuard)
     @Put(':id')
-    async update(@Param('id') id: number, @Body() data: UpdateGebruikerDto): Promise<IGebruiker> {
-        const result = await this.gebruikerService.update(id, data);
+    async update(@Req() request: CustomRequest, @Param('id') id: number, @Body() data: UpdateGebruikerDto): Promise<IGebruiker> {
+      const gebruikerId = request.gebruikerId as string;
+      const result = await this.gebruikerService.update(gebruikerId, id, data);
         if (!result) {
             throw new HttpException(
                 {

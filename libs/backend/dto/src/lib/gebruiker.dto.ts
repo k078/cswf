@@ -16,14 +16,12 @@ export class CreateGebruikerDto implements ICreateGebruiker {
   @IsNotEmpty()
   wachtwoord!: string;
 
-  @IsNotEmpty()
   rol: Rol = Rol.USER;
 
+  @IsNotEmpty()
   @IsDate()
-  @IsOptional()
   geboortedatum!: Date;
 }
-
 export class UpdateGebruikerDto implements IUpdateGebruiker {
   @IsOptional()
   @IsString()
@@ -41,3 +39,7 @@ export class UpdateGebruikerDto implements IUpdateGebruiker {
   @IsDate()
   geboortedatum?: Date;
 }
+function Type(arg0: () => DateConstructor): (target: CreateGebruikerDto, propertyKey: "geboortedatum") => void {
+  throw new Error("Function not implemented.");
+}
+
