@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, Req, UseGuards } from '@nestjs/common';
 import { IGebruiker } from '@cswf/shared/api';
 import { GebruikerService } from './gebruiker.service';
 import { CreateGebruikerDto, UpdateGebruikerDto } from '@cswf/backend/dto';
+import { Request } from 'express';
+import { AuthGuard } from '../auth/authguard';
+import { CustomRequest } from '../auth/custom-request.interface';
 
 @Controller('gebruiker')
 export class GebruikerController {
@@ -49,17 +52,44 @@ export class GebruikerController {
         return gebruiker;
     }
 
-    @Post('logout/:id')
-    async logout(@Param('id') id: number): Promise<{ message: string }> {
-        const success = await this.gebruikerService.logout(id);
+    @UseGuards(AuthGuard) // Zorg ervoor dat de AuthGuard wordt gebruikt
+    @Post('logout')
+    async logout(@Req() request: CustomRequest): Promise<{ message: string }> {
+        const gebruikerId = request.gebruikerId; // Haal gebruikerId uit het request-object
+        const authorizationHeader = request.headers.authorization;
+
+        if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: 'No valid token provided',
+                },
+                HttpStatus.UNAUTHORIZED,
+            );
+        }
+
+        const token = authorizationHeader.split(' ')[1]; // Haal het token uit de Authorization-header
+
+        if (!gebruikerId) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.BAD_REQUEST,
+                    error: 'Bad Request',
+                    message: 'gebruikerId is required',
+                },
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+        const success = await this.gebruikerService.logout(gebruikerId, token);
         if (!success) {
             throw new HttpException(
                 {
                     status: HttpStatus.NOT_FOUND,
                     error: 'Not Found',
-                    message: `Gebruiker with id ${id} not found`
+                    message: `Gebruiker with id ${gebruikerId} not found`,
                 },
-                HttpStatus.NOT_FOUND
+                HttpStatus.NOT_FOUND,
             );
         }
         return { message: 'Successfully logged out' };

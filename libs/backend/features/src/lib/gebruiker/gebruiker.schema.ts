@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Genre, IGebruiker, IVerzameling, Id, Rol } from '@cswf/shared/api';
+import { IGebruiker, IVerzameling, Rol } from '@cswf/shared/api';
 
 export type GebruikerDocument = Gebruiker & Document;
 

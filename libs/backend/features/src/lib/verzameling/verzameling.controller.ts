@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { VerzamelingService } from './verzameling.service';
 import { IVerzameling } from '@cswf/shared/api';
 import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
+import { AuthGuard } from '../auth/authguard';
 
 @Controller('verzameling')
 export class VerzamelingController {
     constructor(private readonly verzamelingService: VerzamelingService) {}
 
     @Get('')
+    @UseGuards(AuthGuard)
     async getAll(): Promise<IVerzameling[]> {
         return this.verzamelingService.findAll();
     }
