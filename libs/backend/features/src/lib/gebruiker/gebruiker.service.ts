@@ -53,15 +53,36 @@ export class GebruikerService {
     return gebruikers as IGebruiker[];
   }
 
-  async findOne(id: string): Promise<IGebruiker | null> {
+  async findOne(gebruikerId: string, id: string): Promise<IGebruiker | null> {
     this.logger.log(`findOne called with id ${id}`);
-    const gebruiker = await this.gebruikerModel.findOne({ id }).lean().exec();
-    if (!gebruiker) {
+    const gebruikersIdNum = parseInt(gebruikerId, 10);
+    const targetId = typeof id === 'string' ? parseInt(id, 10) : id;
+
+    const LoggedInGebruiker = await this.gebruikerModel
+        .findOne({ id: gebruikersIdNum })
+        .lean()
+        .exec();
+
+    const isAdmin = LoggedInGebruiker?.rol === 'ADMIN';
+    const isSameUser = gebruikersIdNum === targetId;
+    const gebruikerToFind = await this.gebruikerModel.findOne({ id }).lean().exec();
+    if (!isAdmin && !isSameUser) {
+      this.logger.warn(`Unauthorized access for gebruiker: ${gebruikerId}`);
+      throw new HttpException(
+          {
+              status: HttpStatus.UNAUTHORIZED,
+              error: 'Unauthorized',
+              message: 'You do not have permission to view a gebruiker other than yourself',
+          },
+          HttpStatus.UNAUTHORIZED
+      );
+  }
+    if (!gebruikerToFind) {
       this.logger.warn(`Gebruiker with id ${id} not found`);
       return null;
     }
     this.logger.log(`Found gebruiker with id ${id}`);
-    return gebruiker as IGebruiker;
+    return gebruikerToFind as IGebruiker;
   }
 
   async create(gebruiker: CreateGebruikerDto): Promise<IGebruiker> {
@@ -168,15 +189,14 @@ export class GebruikerService {
   }
 
   async update(
-    gebruikersId: string,  // Let op: dit is een string
-    id: number,            // Dit is een number
+    gebruikersId: string,
+    id: number,
     gebruiker: UpdateGebruikerDto
 ): Promise<IGebruiker | null> {
     this.logger.log(`update called with id ${id}`);
 
-    // Converteer beide IDs naar number
     const gebruikersIdNum = parseInt(gebruikersId, 10);
-    const targetId = typeof id === 'string' ? parseInt(id, 10) : id; // Zorg dat id een number is
+    const targetId = typeof id === 'string' ? parseInt(id, 10) : id;
 
     const LoggedInGebruiker = await this.gebruikerModel
         .findOne({ id: gebruikersIdNum })
@@ -184,11 +204,11 @@ export class GebruikerService {
         .exec();
 
     this.logger.log(`LoggedInGebruiker: ${JSON.stringify(LoggedInGebruiker)}`);
-    this.logger.log(`loggedInId: ${gebruikersIdNum} (type: ${typeof gebruikersIdNum})`); // Log type
-    this.logger.log(`id: ${targetId} (type: ${typeof targetId})`); // Log type
+    this.logger.log(`loggedInId: ${gebruikersIdNum} (type: ${typeof gebruikersIdNum})`);
+    this.logger.log(`id: ${targetId} (type: ${typeof targetId})`);
 
     const isAdmin = LoggedInGebruiker?.rol === 'ADMIN';
-    const isSameUser = gebruikersIdNum === targetId; // Vergelijk numbers
+    const isSameUser = gebruikersIdNum === targetId;
 
     if (!isAdmin && !isSameUser) {
         this.logger.warn(`Unauthorized access for gebruiker: ${gebruikersId}`);
@@ -203,7 +223,7 @@ export class GebruikerService {
     }
 
     const updatedGebruiker = await this.gebruikerModel
-        .findOneAndUpdate({ id: targetId }, gebruiker, { new: true, lean: true }) // Gebruik targetId
+        .findOneAndUpdate({ id: targetId }, gebruiker, { new: true, lean: true })
         .exec();
 
     if (!updatedGebruiker) {

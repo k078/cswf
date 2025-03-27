@@ -29,8 +29,9 @@ export class GebruikerController {
 
     @UseGuards(AuthGuard)
     @Get(':id')
-    async findOne(@Param('id') id: string): Promise<IGebruiker> {
-        const gebruiker = await this.gebruikerService.findOne(id);
+    async findOne(@Req() request: CustomRequest, @Param('id') id: string): Promise<IGebruiker> {
+      const gebruikerId = request.gebruikerId as string;
+      const gebruiker = await this.gebruikerService.findOne(gebruikerId, id);
         if (!gebruiker) {
             throw new HttpException(
                 {
