@@ -49,7 +49,6 @@ export class GebruikerService {
         HttpStatus.UNAUTHORIZED
       );
     }
-
     return gebruikers as IGebruiker[];
   }
 

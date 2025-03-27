@@ -18,7 +18,6 @@ export class CreateVerzamelingDto implements ICreateVerzameling {
   @IsNotEmpty()
   naam!: string;
 
-  @IsNotEmpty()
   eigenaar!: string;
 
   @IsString()

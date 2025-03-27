@@ -12,7 +12,7 @@ import { Gebruiker, GebruikerSchema } from './gebruiker/gebruiker.schema';
     ]),
   ],
   controllers: [GebruikerController],
-  providers: [GebruikerService, TokenBlacklistService], // Voeg de blacklist-service toe
-  exports: [GebruikerService, TokenBlacklistService], // Exporteer de blacklist-service
+  providers: [GebruikerService, TokenBlacklistService], 
+  exports: [GebruikerService, TokenBlacklistService, MongooseModule],
 })
 export class GebruikerModule {}

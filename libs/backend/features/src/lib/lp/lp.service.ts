@@ -1,9 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { ILp } from '@cswf/shared/api';
 import { InjectModel } from '@nestjs/mongoose';
 import { Lp, LpDocument } from './lp.schema';
 import { Model } from 'mongoose';
 import { CreateLpDto, UpdateLpDto } from '@cswf/backend/dto';
+import { Gebruiker } from '../gebruiker/gebruiker.schema';
+import { TokenBlacklistService } from '../gebruiker/blacklist.service';
 
 @Injectable()
 export class LpService {
@@ -11,6 +13,8 @@ export class LpService {
 
     constructor(
         @InjectModel(Lp.name) private readonly lpModel: Model<LpDocument>,
+        @InjectModel(Gebruiker.name) private readonly gebruikerModel: Model<Gebruiker>,
+        private readonly tokenBlacklistService: TokenBlacklistService
     ) {}
 
     private async getLowestId(): Promise<number> {
@@ -42,8 +46,22 @@ export class LpService {
         return lp as ILp;
     }
 
-    async create(lpDto: CreateLpDto): Promise<ILp> {
+    async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {
         this.logger.log('create called');
+
+        // Haal de ingelogde gebruiker op
+        const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
+        if (!gebruiker) {
+            throw new HttpException(
+                {
+                    status: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: 'User not found',
+                },
+                HttpStatus.UNAUTHORIZED
+            );
+        }
+
         const id = await this.getLowestId();
         const lpData = {
             ...lpDto,
@@ -58,8 +76,28 @@ export class LpService {
         return plainObject as ILp;
     }
 
-    async delete(id: number): Promise<ILp | null> {
+    async delete(id: number, gebruikerId: string): Promise<ILp | null> {
         this.logger.log(`delete called with id ${id}`);
+
+        // Haal de gebruiker op
+        const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
+        if (!gebruiker) {
+            this.logger.warn(`User not found`);
+            return null;
+        }
+
+        // Controleer of gebruiker admin is
+        if (gebruiker.rol !== 'ADMIN') {
+            throw new HttpException(
+                {
+                    status: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: 'Only ADMIN users can delete LPs',
+                },
+                HttpStatus.UNAUTHORIZED
+            );
+        }
+
         const deletedLp = await this.lpModel.findOneAndDelete({id}).lean().exec();
         if (!deletedLp) {
             this.logger.warn(`LP with id ${id} not found for deletion`);
@@ -69,8 +107,28 @@ export class LpService {
         return deletedLp as ILp;
     }
 
-    async update(id: number, lpDto: UpdateLpDto): Promise<ILp | null> {
+    async update(id: number, lpDto: UpdateLpDto, gebruikerId: string): Promise<ILp | null> {
         this.logger.log(`update called with id ${id}`);
+
+        // Haal de gebruiker op
+        const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
+        if (!gebruiker) {
+            this.logger.warn(`User not found`);
+            return null;
+        }
+
+        // Controleer of gebruiker admin is
+        if (gebruiker.rol !== 'ADMIN') {
+            throw new HttpException(
+                {
+                    status: HttpStatus.UNAUTHORIZED,
+                    error: 'Unauthorized',
+                    message: 'Only ADMIN users can update LPs',
+                },
+                HttpStatus.UNAUTHORIZED
+            );
+        }
+
         const updatedLp = await this.lpModel.findOneAndUpdate(
             {id},
             lpDto,

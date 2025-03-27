@@ -5,6 +5,7 @@
   import { Verzameling, VerzamelingSchema } from './verzameling/verzameling.schema';
   import { LpModule } from './lp.module';
 import { GebruikerModule } from './gebruiker.module';
+import { TokenBlacklistService } from './gebruiker/blacklist.service';
 
   @Module({
     imports: [
@@ -15,7 +16,7 @@ import { GebruikerModule } from './gebruiker.module';
       GebruikerModule
     ],
     controllers: [VerzamelingController],
-    providers: [VerzamelingService],
+    providers: [VerzamelingService, TokenBlacklistService],
     exports: [VerzamelingService],
   })
   export class VerzamelingModule {}
