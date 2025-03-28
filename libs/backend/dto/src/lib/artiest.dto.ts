@@ -59,9 +59,9 @@ export class UpdateArtiestDto implements IUpdateArtiest{
   @IsOptional()
   img?: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  gebruiker?: string;
+  gebruikerId?: number;
 }
 
 export class UpsertArtiestDto implements IUpsertArtiest{

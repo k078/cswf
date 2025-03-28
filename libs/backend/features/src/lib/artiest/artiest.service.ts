@@ -132,7 +132,7 @@ export class ArtiestService {
                 HttpStatus.UNAUTHORIZED
             );
         }
-
+        artiestDto.gebruikerId = gebruiker.id as number;
         const updatedArtiest = await this.artiestModel.findOneAndUpdate(
             {id},
             artiestDto,
