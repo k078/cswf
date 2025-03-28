@@ -66,7 +66,8 @@ export class LpService {
         const lpData = {
             ...lpDto,
             id,
-            release: new Date(lpDto.release)
+            release: new Date(lpDto.release),
+            gebruikerId: gebruiker.id // Sla de gebruikerId op
         };
         this.logger.debug(`Creating LP with data: ${JSON.stringify(lpData)}`);
 
@@ -79,20 +80,22 @@ export class LpService {
     async delete(id: number, gebruikerId: string): Promise<ILp | null> {
         this.logger.log(`delete called with id ${id}`);
 
-        // Haal de gebruiker op
+        // Haal de LP en gebruiker op
+        const lp = await this.lpModel.findOne({id}).lean().exec();
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
-        if (!gebruiker) {
-            this.logger.warn(`User not found`);
+
+        if (!lp || !gebruiker) {
+            this.logger.warn(`LP or user not found`);
             return null;
         }
 
-        // Controleer of gebruiker admin is
-        if (gebruiker.rol !== 'ADMIN') {
+        // Controleer of gebruiker admin is of eigenaar van de LP
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
                     error: 'Unauthorized',
-                    message: 'Only ADMIN users can delete LPs',
+                    message: 'You do not have permission to delete this LP',
                 },
                 HttpStatus.UNAUTHORIZED
             );
@@ -110,25 +113,27 @@ export class LpService {
     async update(id: number, lpDto: UpdateLpDto, gebruikerId: string): Promise<ILp | null> {
         this.logger.log(`update called with id ${id}`);
 
-        // Haal de gebruiker op
+        // Haal de LP en gebruiker op
+        const lp = await this.lpModel.findOne({id}).lean().exec();
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
-        if (!gebruiker) {
-            this.logger.warn(`User not found`);
+
+        if (!lp || !gebruiker) {
+            this.logger.warn(`LP or user not found`);
             return null;
         }
 
-        // Controleer of gebruiker admin is
-        if (gebruiker.rol !== 'ADMIN') {
+        // Controleer of gebruiker admin is of eigenaar van de LP
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
                     error: 'Unauthorized',
-                    message: 'Only ADMIN users can update LPs',
+                    message: 'You do not have permission to update this LP',
                 },
                 HttpStatus.UNAUTHORIZED
             );
         }
-
+        lpDto.gebruikerId = gebruiker.id as number;
         const updatedLp = await this.lpModel.findOneAndUpdate(
             {id},
             lpDto,

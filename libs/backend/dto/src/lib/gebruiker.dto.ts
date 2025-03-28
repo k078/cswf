@@ -31,9 +31,7 @@ export class UpdateGebruikerDto implements IUpdateGebruiker {
   @IsString()
   wachtwoord?: string;
 
-  @IsOptional()
-  @IsNumber()
-  rol?: Rol;
+  rol: Rol = Rol.USER;
 
   @IsOptional()
   @IsDate()

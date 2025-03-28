@@ -44,8 +44,8 @@ export class CreateLpDto implements ICreateLp {
   img!: string;
 
   @IsString()
-  @IsNotEmpty()
-  gebruiker!: string;
+  @IsOptional()
+  gebruikerId!: number;
 }
 
 
@@ -71,6 +71,10 @@ export class UpdateLpDto implements IUpdateLp{
 
   @IsOptional()
   genre?: Genre;
+
+  @IsNumber()
+  @IsOptional()
+  gebruikerId?: number;
 }
 
 export class UpsertLpDto implements IUpsertLp{
@@ -104,7 +108,6 @@ export class UpsertLpDto implements IUpsertLp{
   @IsNotEmpty()
   img!: string;
 
-  @IsString()
-  @IsNotEmpty()
-  gebruiker!: string;
+  @IsNumber()
+  gebruikerId!: number;
 }

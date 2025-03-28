@@ -15,9 +15,9 @@ export interface ILp {
     label:string;
     genre:Genre;
     img:string;
-    gebruiker:User;
+    gebruikerId:number;
 }
 
-export type ICreateLp = Pick<ILp, 'titel' | 'artiest' | 'release' | 'land' | 'label' | 'genre' | 'img' | 'gebruiker'>;
+export type ICreateLp = Pick<ILp, 'titel' | 'artiest' | 'release' | 'land' | 'label' | 'genre' | 'img'>;
 export type IUpdateLp = Partial<Omit<ILp, 'id'>>;
 export type IUpsertLp=ILp;

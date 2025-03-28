@@ -33,7 +33,7 @@ export class Lp implements ILp {
   img!: string;
 
   @Prop({ required: true })
-  gebruiker!: string;
+  gebruikerId!: number;
 }
 
 export const LpSchema = SchemaFactory.createForClass(Lp);
