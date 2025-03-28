@@ -27,7 +27,7 @@ export class Artiest implements IArtiest {
   img!: string;
 
   @Prop({ required: true })
-  gebruiker!: string;
+  gebruikerId!: number;
 }
 
 export const ArtiestSchema = SchemaFactory.createForClass(Artiest);

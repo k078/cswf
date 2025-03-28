@@ -58,24 +58,29 @@ export class GebruikerService {
     const targetId = typeof id === 'string' ? parseInt(id, 10) : id;
 
     const LoggedInGebruiker = await this.gebruikerModel
-        .findOne({ id: gebruikersIdNum })
-        .lean()
-        .exec();
+      .findOne({ id: gebruikersIdNum })
+      .lean()
+      .exec();
 
+    this.logger.log(`LoggedInGebruiker: ${JSON.stringify(LoggedInGebruiker)}`);
     const isAdmin = LoggedInGebruiker?.rol === 'ADMIN';
     const isSameUser = gebruikersIdNum === targetId;
-    const gebruikerToFind = await this.gebruikerModel.findOne({ id }).lean().exec();
+    const gebruikerToFind = await this.gebruikerModel
+      .findOne({ id })
+      .lean()
+      .exec();
     if (!isAdmin && !isSameUser) {
       this.logger.warn(`Unauthorized access for gebruiker: ${gebruikerId}`);
       throw new HttpException(
-          {
-              status: HttpStatus.UNAUTHORIZED,
-              error: 'Unauthorized',
-              message: 'You do not have permission to view a gebruiker other than yourself',
-          },
-          HttpStatus.UNAUTHORIZED
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+          message:
+            'You do not have permission to view a gebruiker other than yourself',
+        },
+        HttpStatus.UNAUTHORIZED
       );
-  }
+    }
     if (!gebruikerToFind) {
       this.logger.warn(`Gebruiker with id ${id} not found`);
       return null;
@@ -99,6 +104,55 @@ export class GebruikerService {
     const plainObject = createdGebruiker.toObject();
     this.logger.log(`Created gebruiker with id ${plainObject.id}`);
     return plainObject as IGebruiker;
+  }
+
+  async update(
+    gebruikersId: string,
+    id: number,
+    gebruiker: UpdateGebruikerDto
+  ): Promise<IGebruiker | null> {
+    this.logger.log(`update called with id ${id}`);
+
+    const gebruikersIdNum = parseInt(gebruikersId, 10);
+    const targetId = typeof id === 'string' ? parseInt(id, 10) : id;
+
+    const LoggedInGebruiker = await this.gebruikerModel
+      .findOne({ id: gebruikersIdNum })
+      .lean()
+      .exec();
+
+    this.logger.log(`LoggedInGebruiker: ${JSON.stringify(LoggedInGebruiker)}`);
+    this.logger.log(
+      `loggedInId: ${gebruikersIdNum} (type: ${typeof gebruikersIdNum})`
+    );
+    this.logger.log(`id: ${targetId} (type: ${typeof targetId})`);
+
+    const isAdmin = LoggedInGebruiker?.rol === 'ADMIN';
+    const isSameUser = gebruikersIdNum === targetId;
+
+    if (!isAdmin && !isSameUser) {
+      this.logger.warn(`Unauthorized access for gebruiker: ${gebruikersId}`);
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+          message: 'You do not have permission to update a gebruiker',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    const updatedGebruiker = await this.gebruikerModel
+      .findOneAndUpdate({ id: targetId }, gebruiker, { new: true, lean: true })
+      .exec();
+
+    if (!updatedGebruiker) {
+      this.logger.warn(`Gebruiker with id ${targetId} not found for update`);
+      return null;
+    }
+
+    this.logger.log(`Updated gebruiker with id ${targetId}`);
+    return updatedGebruiker as IGebruiker;
   }
 
   async delete(gebruikerId: string, id: number): Promise<IGebruiker | null> {
@@ -131,11 +185,10 @@ export class GebruikerService {
     }
   }
 
-  async login(
-    gebruikersnaam: string,
-    wachtwoord: string
-  ): Promise<IGebruiker | null> {
+  async login(gebruikersnaam: string, wachtwoord: string): Promise<IGebruiker | null> {
+
     this.logger.log(`login called for gebruiker: ${gebruikersnaam}`);
+
     const gebruiker = await this.gebruikerModel
       .findOne({ gebruikersnaam, wachtwoord })
       .lean()
@@ -186,51 +239,4 @@ export class GebruikerService {
       throw new Error('Logout failed');
     }
   }
-
-  async update(
-    gebruikersId: string,
-    id: number,
-    gebruiker: UpdateGebruikerDto
-): Promise<IGebruiker | null> {
-    this.logger.log(`update called with id ${id}`);
-
-    const gebruikersIdNum = parseInt(gebruikersId, 10);
-    const targetId = typeof id === 'string' ? parseInt(id, 10) : id;
-
-    const LoggedInGebruiker = await this.gebruikerModel
-        .findOne({ id: gebruikersIdNum })
-        .lean()
-        .exec();
-
-    this.logger.log(`LoggedInGebruiker: ${JSON.stringify(LoggedInGebruiker)}`);
-    this.logger.log(`loggedInId: ${gebruikersIdNum} (type: ${typeof gebruikersIdNum})`);
-    this.logger.log(`id: ${targetId} (type: ${typeof targetId})`);
-
-    const isAdmin = LoggedInGebruiker?.rol === 'ADMIN';
-    const isSameUser = gebruikersIdNum === targetId;
-
-    if (!isAdmin && !isSameUser) {
-        this.logger.warn(`Unauthorized access for gebruiker: ${gebruikersId}`);
-        throw new HttpException(
-            {
-                status: HttpStatus.UNAUTHORIZED,
-                error: 'Unauthorized',
-                message: 'You do not have permission to update a gebruiker',
-            },
-            HttpStatus.UNAUTHORIZED
-        );
-    }
-
-    const updatedGebruiker = await this.gebruikerModel
-        .findOneAndUpdate({ id: targetId }, gebruiker, { new: true, lean: true })
-        .exec();
-
-    if (!updatedGebruiker) {
-        this.logger.warn(`Gebruiker with id ${targetId} not found for update`);
-        return null;
-    }
-
-    this.logger.log(`Updated gebruiker with id ${targetId}`);
-    return updatedGebruiker as IGebruiker;
-}
 }

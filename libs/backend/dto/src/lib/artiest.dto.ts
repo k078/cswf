@@ -33,8 +33,8 @@ export class CreateArtiestDto implements ICreateArtiest {
   img!: string;
 
   @IsString()
-  @IsNotEmpty()
-  gebruiker!: string;
+  @IsOptional()
+  gebruikerId!: number;
 }
 
 
@@ -65,6 +65,7 @@ export class UpdateArtiestDto implements IUpdateArtiest{
 }
 
 export class UpsertArtiestDto implements IUpsertArtiest{
+  gebruikerId!: number;
   @IsNumber()
   @IsNotEmpty()
   id!: number;

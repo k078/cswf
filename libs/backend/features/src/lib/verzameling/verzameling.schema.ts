@@ -15,7 +15,7 @@ export class Verzameling implements IVerzameling {
   naam!: string;
 
   @Prop({ required: true })
-  eigenaar!: string;
+  gebruikerId!: number;
 
   @Prop({ required: false })
   oprichting: Date= new Date(Date.now());

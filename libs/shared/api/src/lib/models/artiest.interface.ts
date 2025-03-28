@@ -8,9 +8,9 @@ export interface IArtiest {
     leeftijd:number;
     bio:string;
     img:string;
-    gebruiker:string;
+    gebruikerId:number;
 }
 
-export type ICreateArtiest = Pick<IArtiest, 'naam' | 'land' | 'leeftijd' | 'bio' | 'img' | 'gebruiker'>;
+export type ICreateArtiest = Pick<IArtiest, 'naam' | 'land' | 'leeftijd' | 'bio' | 'img' >;
 export type IUpdateArtiest = Partial<Omit<IArtiest, 'id'>>;
 export type IUpsertArtiest=IArtiest;

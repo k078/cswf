@@ -5,6 +5,7 @@ import {
   IsDate,
   IsOptional,
   IsArray,
+  isNumber,
 } from 'class-validator';
 import {
   ICreateVerzameling,
@@ -18,7 +19,9 @@ export class CreateVerzamelingDto implements ICreateVerzameling {
   @IsNotEmpty()
   naam!: string;
 
-  eigenaar!: string;
+  @IsNumber()
+  @IsOptional()
+  gebruikerId!: number;
 
   @IsString()
   @IsNotEmpty()
@@ -30,8 +33,9 @@ export class UpdateVerzamelingDto implements IUpdateVerzameling{
   @IsOptional()
   naam?: string;
 
+  @IsString()
   @IsOptional()
-  eigenaar?: string;
+  gebruikerId?: number;
 
   @IsOptional()
   @IsDate()
@@ -51,8 +55,9 @@ export class UpsertVerzamelingDto implements IUpsertVerzameling{
   @IsNotEmpty()
   naam!: string;
 
+  @IsNumber()
   @IsNotEmpty()
-  eigenaar!: string;
+  gebruikerId!: number;
 
   @IsDate()
   @IsNotEmpty()

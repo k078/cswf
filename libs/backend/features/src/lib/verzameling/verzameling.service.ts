@@ -68,10 +68,11 @@ export class VerzamelingService {
         const verzamelingData = {
             ...verzamelingDto,
             id,
-            oprichting: new Date()
+            oprichting: new Date(),
+            gebruikerId: gebruiker.id,
         };
         this.logger.debug(`Creating verzameling with data: ${JSON.stringify(verzamelingData)}`);
-        verzamelingData.eigenaar = gebruiker.gebruikersnaam;
+        verzamelingData.gebruikerId = gebruiker.id;
         const createdVerzameling = await this.verzamelingModel.create(verzamelingData);
         const plainObject = createdVerzameling.toObject();
         this.logger.log(`Created verzameling with id ${plainObject.id}`);
@@ -91,7 +92,7 @@ export class VerzamelingService {
         }
 
         // Controleer of gebruiker admin is of eigenaar van de verzameling
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.gebruikersnaam !== verzameling.eigenaar) {
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== verzameling.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
@@ -124,7 +125,7 @@ export class VerzamelingService {
         }
 
         // Controleer of gebruiker admin is of eigenaar van de verzameling
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.gebruikersnaam !== verzameling.eigenaar) {
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== verzameling.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
@@ -170,7 +171,7 @@ export class VerzamelingService {
             return 'Verzameling of gebruiker niet gevonden';
         }
         // Controleer of gebruiker admin is of eigenaar van de verzameling
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.gebruikersnaam !== verzameling.eigenaar) {
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== verzameling.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
@@ -207,7 +208,7 @@ export class VerzamelingService {
         }
 
         // Controleer of gebruiker admin is of eigenaar van de verzameling
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.gebruikersnaam !== verzameling.eigenaar) {
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== verzameling.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,

@@ -66,7 +66,7 @@ export class ArtiestService {
         const artiestData = {
             ...artiestDto,
             id,
-            gebruiker: gebruiker.gebruikersnaam // Sla de gebruikersnaam op als eigenaar
+            gebruikerId: gebruiker.id
         };
         this.logger.debug(`Creating artiest with data: ${JSON.stringify(artiestData)}`);
 
@@ -89,7 +89,7 @@ export class ArtiestService {
         }
 
         // Controleer of gebruiker admin is of eigenaar van de artiest
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.gebruikersnaam !== artiest.gebruiker) {
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== artiest.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
@@ -122,7 +122,7 @@ export class ArtiestService {
         }
 
         // Controleer of gebruiker admin is of eigenaar van de artiest
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.gebruikersnaam !== artiest.gebruiker) {
+        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== artiest.gebruikerId) {
             throw new HttpException(
                 {
                     status: HttpStatus.UNAUTHORIZED,
