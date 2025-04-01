@@ -1,4 +1,4 @@
-  import { Module, forwardRef } from '@nestjs/common';
+  import { Module } from '@nestjs/common';
   import { VerzamelingController } from './verzameling/verzameling.controller';
   import { VerzamelingService } from './verzameling/verzameling.service';
   import { MongooseModule } from '@nestjs/mongoose';

@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req, UseInterceptors } from '@nestjs/common';
 import { LpService } from './lp.service';
 import { ILp } from '@cswf/shared/api';
 import { CreateLpDto, UpdateLpDto } from '@cswf/backend/dto';
 import { AuthGuard } from '../auth/authguard';
 import { CustomRequest } from '../auth/custom-request.interface';
+import { LoggingInterceptor } from '../auth/loggingInterceptor';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller('lp')
 export class LpController {
     constructor(private readonly lpService: LpService) {}

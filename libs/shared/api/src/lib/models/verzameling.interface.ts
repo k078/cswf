@@ -1,7 +1,5 @@
 import { Id } from './id.type';
 
-type User = string;
-
 export interface IVerzameling {
     id:Id;
     naam:string;

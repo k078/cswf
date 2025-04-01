@@ -1,8 +1,3 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ApiResponseInterceptor } from '@cswf/backend/dto';
@@ -15,13 +10,13 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
 
   const corsOptions = {
-    origin: '*', // Of specificeer het specifieke domein van je frontend.
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: false,
   };
   app.enableCors(corsOptions);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, transformOptions: { enableImplicitConversion: true } }));
 
   app.useGlobalInterceptors(new ApiResponseInterceptor());
 

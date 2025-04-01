@@ -23,7 +23,7 @@ export class CreateLpDto implements ICreateLp {
   @IsNotEmpty()
   artiest!: string;
 
-  @IsDateString()  // IsDateString voor datumvalidatie
+  @IsDateString()
   @IsNotEmpty()
   release!: Date;
 

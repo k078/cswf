@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req, UseInterceptors } from '@nestjs/common';
 import { ArtiestService } from './artiest.service';
 import { IArtiest } from '@cswf/shared/api';
 import { CreateArtiestDto, UpdateArtiestDto } from '@cswf/backend/dto';
 import { AuthGuard } from '../auth/authguard';
 import { CustomRequest } from '../auth/custom-request.interface';
+import { LoggingInterceptor } from '../auth/loggingInterceptor';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller('artiest')
 export class ArtiestController {
     constructor(private readonly artiestService: ArtiestService) {}

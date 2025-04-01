@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, Req, UseGuards, UseInterceptors } from '@nestjs/common';
 import { IGebruiker } from '@cswf/shared/api';
 import { GebruikerService } from './gebruiker.service';
 import { CreateGebruikerDto, UpdateGebruikerDto } from '@cswf/backend/dto';
-import { Request } from 'express';
 import { AuthGuard } from '../auth/authguard';
 import { CustomRequest } from '../auth/custom-request.interface';
+import { LoggingInterceptor } from '../auth/loggingInterceptor';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller('gebruiker')
 export class GebruikerController {
     constructor(private readonly gebruikerService: GebruikerService) {}

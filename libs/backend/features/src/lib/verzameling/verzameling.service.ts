@@ -51,7 +51,6 @@ export class VerzamelingService {
     async create(verzamelingDto: CreateVerzamelingDto, gebruikerId: string): Promise<IVerzameling> {
         this.logger.log('create called');
 
-        // Haal de ingelogde gebruiker op
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
         if (!gebruiker) {
             throw new HttpException(
@@ -82,7 +81,6 @@ export class VerzamelingService {
     async delete(id: number, gebruikerId: string): Promise<IVerzameling | null> {
         this.logger.log(`delete called with id ${id}`);
 
-        // Haal de verzameling en gebruiker op
         const verzameling = await this.verzamelingModel.findOne({id}).lean().exec();
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
 
@@ -91,7 +89,6 @@ export class VerzamelingService {
             return null;
         }
 
-        // Controleer of gebruiker admin is of eigenaar van de verzameling
         if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== verzameling.gebruikerId) {
             throw new HttpException(
                 {

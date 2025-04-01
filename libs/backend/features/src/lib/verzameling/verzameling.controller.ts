@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req, UseInterceptors } from '@nestjs/common';
 import { VerzamelingService } from './verzameling.service';
 import { IVerzameling } from '@cswf/shared/api';
 import { CreateVerzamelingDto, UpdateVerzamelingDto } from '@cswf/backend/dto';
 import { AuthGuard } from '../auth/authguard';
 import { CustomRequest } from '../auth/custom-request.interface';
+import { LoggingInterceptor } from '../auth/loggingInterceptor';
 
+@UseInterceptors(LoggingInterceptor)
 @Controller('verzameling')
 export class VerzamelingController {
     constructor(private readonly verzamelingService: VerzamelingService) {}
