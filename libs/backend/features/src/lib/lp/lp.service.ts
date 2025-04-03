@@ -47,10 +47,15 @@ export class LpService {
         this.recommendationClientService.getRecommendationsByGenre(lp.genre, lp.id.toString()),
         this.recommendationClientService.getRecommendationsByArtist(lp.artiest, lp.id.toString())
       ]);
+
+      const allSuggestions = [...artistSuggestions, ...genreSuggestions];
+      const uniqueSuggestions = [...new Map(
+          allSuggestions.map(item => [item.id, item])
+      ).values()];
+
       return {
-        ...lp,
-        genreSuggestions: genreSuggestions,
-        artistSuggestions: artistSuggestions
+          ...lp,
+          suggestions: uniqueSuggestions.slice(0, 5)
       };
     }
 
