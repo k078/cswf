@@ -11,171 +11,196 @@ import { RecommendationClientService } from '../rcmnd/rcmndClient.service';
 
 @Injectable()
 export class LpService {
-    private readonly logger = new Logger(LpService.name);
+  private readonly logger = new Logger(LpService.name);
 
-    constructor(
-        @InjectModel(Lp.name) private readonly lpModel: Model<LpDocument>,
-        @InjectModel(Gebruiker.name) private readonly gebruikerModel: Model<Gebruiker>,
-        private readonly tokenBlacklistService: TokenBlacklistService,
-        private readonly neo4jService: Neo4jService,
-        private readonly recommendationClientService: RecommendationClientService,
-    ) {}
+  constructor(
+    @InjectModel(Lp.name) private readonly lpModel: Model<LpDocument>,
+    @InjectModel(Gebruiker.name)
+    private readonly gebruikerModel: Model<Gebruiker>,
+    private readonly tokenBlacklistService: TokenBlacklistService,
+    private readonly neo4jService: Neo4jService,
+    private readonly recommendationClientService: RecommendationClientService
+  ) {}
 
-    private async getLowestId(): Promise<number> {
-        this.logger.log('getLowestId called');
-        const usedIds = (await this.lpModel.distinct('id').exec()) as number[];
-        let lowestId = 1;
-        while(usedIds.includes(lowestId)) {
-            lowestId++;
-        }
-        this.logger.log(`Found lowest available ID: ${lowestId}`);
-        return lowestId;
+  private async getLowestId(): Promise<number> {
+    this.logger.log('getLowestId called');
+    const usedIds = (await this.lpModel.distinct('id').exec()) as number[];
+    let lowestId = 1;
+    while (usedIds.includes(lowestId)) {
+      lowestId++;
+    }
+    this.logger.log(`Found lowest available ID: ${lowestId}`);
+    return lowestId;
+  }
+
+  async findAll(): Promise<ILp[]> {
+    this.logger.log('findAll called');
+    const lps = await this.lpModel.find().lean().exec();
+    this.logger.log(`Found ${lps.length} LPs`);
+    return lps as ILp[];
+  }
+
+  async findOne(id: number) {
+    const lp = await this.lpModel.findOne({ id }).lean().exec();
+    if (!lp) return null;
+
+    const [genreRecommendations, artistRecommendations] = await Promise.all([
+      this.recommendationClientService.getRecommendationsByGenre(
+        lp.genre,
+        lp.id.toString()
+      ),
+      this.recommendationClientService.getRecommendationsByArtist(
+        lp.artiest,
+        lp.id.toString()
+      ),
+    ]);
+
+    const allSuggestions = [...artistRecommendations, ...genreRecommendations]
+    .filter(suggestion => suggestion.id !== lp.id);
+    const uniqueSuggestions = [
+      ...new Map(allSuggestions.map((item) => [item.id, item])).values(),
+    ];
+
+    return {
+      ...lp,
+      suggestions: uniqueSuggestions.slice(0, 5),
+    };
+  }
+
+  async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {
+    this.logger.log('create called');
+
+    const gebruiker = await this.gebruikerModel
+      .findOne({ id: gebruikerId })
+      .lean()
+      .exec();
+    if (!gebruiker) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+          message: 'User not found',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
     }
 
-    async findAll(): Promise<ILp[]> {
-        this.logger.log('findAll called');
-        const lps = await this.lpModel.find().lean().exec();
-        this.logger.log(`Found ${lps.length} LPs`);
-        return lps as ILp[];
-    }
+    const id = await this.getLowestId();
+    const lpData = {
+      ...lpDto,
+      id,
+      gebruikerId: gebruiker.id,
+    };
+    this.logger.debug(`Creating LP with data: ${JSON.stringify(lpData)}`);
 
-    async findOne(id: number) {
-      const lp = await this.lpModel.findOne({ id }).lean().exec();
-      if (!lp) return null;
+    const createdLp = await this.lpModel.create(lpData);
 
-      const [genreSuggestions, artistSuggestions] = await Promise.all([
-        this.recommendationClientService.getRecommendationsByGenre(lp.genre, lp.id.toString()),
-        this.recommendationClientService.getRecommendationsByArtist(lp.artiest, lp.id.toString())
-      ]);
-
-      const allSuggestions = [...artistSuggestions, ...genreSuggestions];
-      const uniqueSuggestions = [...new Map(
-          allSuggestions.map(item => [item.id, item])
-      ).values()];
-
-      return {
-          ...lp,
-          suggestions: uniqueSuggestions.slice(0, 5)
-      };
-    }
-
-    async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {
-        this.logger.log('create called');
-
-        const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
-        if (!gebruiker) {
-            throw new HttpException(
-                {
-                    status: HttpStatus.UNAUTHORIZED,
-                    error: 'Unauthorized',
-                    message: 'User not found',
-                },
-                HttpStatus.UNAUTHORIZED
-            );
-        }
-
-        const id = await this.getLowestId();
-        const lpData = {
-            ...lpDto,
-            id,
-            gebruikerId: gebruiker.id
-        };
-        this.logger.debug(`Creating LP with data: ${JSON.stringify(lpData)}`);
-
-        const createdLp = await this.lpModel.create(lpData);
-
-
-        await this.neo4jService.runQuery(`
+    await this.neo4jService.runQuery(
+      `
           MERGE (a:Artist {name: $artiestNaam})
           MERGE (l:LP {id: $id})
           SET l.titel = $titel, l.artiest = $artiestNaam
           MERGE (l)-[:HAS_GENRE]->(g:Genre {name: $genre})
           MERGE (l)-[:HAS_ARTIST]->(a)
-      `, {
-          id: lpData.id,
-          titel: lpData.titel,
-          artiestNaam: lpData.artiest,
-          genre: lpData.genre
-      });
+      `,
+      {
+        id: lpData.id,
+        titel: lpData.titel,
+        artiestNaam: lpData.artiest,
+        genre: lpData.genre,
+      }
+    );
 
-        const plainObject = createdLp.toObject();
-        this.logger.log(`Created LP with id ${plainObject.id}`);
-        return plainObject as ILp;
+    const plainObject = createdLp.toObject();
+    this.logger.log(`Created LP with id ${plainObject.id}`);
+    return plainObject as ILp;
+  }
+
+  async delete(id: number, gebruikerId: string): Promise<ILp | null> {
+    this.logger.log(`delete called with id ${id}`);
+
+    const lp = await this.lpModel.findOne({ id }).lean().exec();
+    const gebruiker = await this.gebruikerModel
+      .findOne({ id: gebruikerId })
+      .lean()
+      .exec();
+
+    if (!lp || !gebruiker) {
+      this.logger.warn(`LP or user not found`);
+      return null;
     }
 
-    async delete(id: number, gebruikerId: string): Promise<ILp | null> {
-        this.logger.log(`delete called with id ${id}`);
+    if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+          message: 'You do not have permission to delete this LP',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
 
-        const lp = await this.lpModel.findOne({id}).lean().exec();
-        const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
+    const deletedLp = await this.lpModel.findOneAndDelete({ id }).lean().exec();
+    if (!deletedLp) {
+      this.logger.warn(`LP with id ${id} not found for deletion`);
+      return null;
+    }
+    this.logger.log(`Deleted LP with id ${id}`);
 
-        if (!lp || !gebruiker) {
-            this.logger.warn(`LP or user not found`);
-            return null;
-        }
-
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
-            throw new HttpException(
-                {
-                    status: HttpStatus.UNAUTHORIZED,
-                    error: 'Unauthorized',
-                    message: 'You do not have permission to delete this LP',
-                },
-                HttpStatus.UNAUTHORIZED
-            );
-        }
-
-        const deletedLp = await this.lpModel.findOneAndDelete({id}).lean().exec();
-        if (!deletedLp) {
-            this.logger.warn(`LP with id ${id} not found for deletion`);
-            return null;
-        }
-        this.logger.log(`Deleted LP with id ${id}`);
-
-        await this.neo4jService.runQuery(`
+    await this.neo4jService.runQuery(
+      `
           MATCH (l:LP {id: $id})
           DETACH DELETE l
-        `, { id });
+        `,
+      { id }
+    );
 
-        return deletedLp as ILp;
+    return deletedLp as ILp;
+  }
+
+  async update(
+    id: number,
+    lpDto: UpdateLpDto,
+    gebruikerId: string
+  ): Promise<ILp | null> {
+    this.logger.log(`update called with id ${id}`);
+
+    const lp = await this.lpModel.findOne({ id }).lean().exec();
+    const gebruiker = await this.gebruikerModel
+      .findOne({ id: gebruikerId })
+      .lean()
+      .exec();
+
+    if (!lp || !gebruiker) {
+      this.logger.warn(`LP or user not found`);
+      return null;
     }
 
-    async update(id: number, lpDto: UpdateLpDto, gebruikerId: string): Promise<ILp | null> {
-        this.logger.log(`update called with id ${id}`);
+    if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Unauthorized',
+          message: 'You do not have permission to update this LP',
+        },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+    lpDto.gebruikerId = gebruiker.id as number;
+    const updatedLp = await this.lpModel
+      .findOneAndUpdate({ id }, lpDto, { new: true, lean: true })
+      .exec();
 
-        const lp = await this.lpModel.findOne({id}).lean().exec();
-        const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
+    if (!updatedLp) {
+      this.logger.warn(`LP with id ${id} not found for update`);
+      return null;
+    }
 
-        if (!lp || !gebruiker) {
-            this.logger.warn(`LP or user not found`);
-            return null;
-        }
+    this.logger.log(`Updated LP with id ${id}`);
 
-        if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
-            throw new HttpException(
-                {
-                    status: HttpStatus.UNAUTHORIZED,
-                    error: 'Unauthorized',
-                    message: 'You do not have permission to update this LP',
-                },
-                HttpStatus.UNAUTHORIZED
-            );
-        }
-        lpDto.gebruikerId = gebruiker.id as number;
-        const updatedLp = await this.lpModel.findOneAndUpdate(
-            {id},
-            lpDto,
-            { new: true, lean: true }
-        ).exec();
-
-        if (!updatedLp) {
-            this.logger.warn(`LP with id ${id} not found for update`);
-            return null;
-        }
-
-        this.logger.log(`Updated LP with id ${id}`);
-
-        await this.neo4jService.runQuery(`
+    await this.neo4jService.runQuery(
+      `
           MATCH (l:LP {id: $id})
           SET l.titel = $titel, l.artiest = $artiest
           WITH l
@@ -190,14 +215,17 @@ export class LpService {
           WITH l
           MERGE (a:Artist {name: $artiest})
           MERGE (l)-[:HAS_ARTIST]->(a)
-        `, {
-          id,
-          titel: lpDto.titel,
-          artiest: lpDto.artiest,
-          genre: lpDto.genre
-        });
+        `,
+      {
+        id,
+        titel: lpDto.titel,
+        artiest: lpDto.artiest,
+        genre: lpDto.genre,
+      }
+    );
 
-        await this.neo4jService.runQuery(`
+    await this.neo4jService.runQuery(
+      `
           MATCH (l:LP {id: $id})
           SET l.titel = $titel, l.artiest = $artiestNaam
           WITH l
@@ -206,11 +234,13 @@ export class LpService {
           WITH l
           MERGE (a:Artist {name: $artiestNaam})
           MERGE (l)-[:HAS_ARTIST]->(a)
-      `, {
-          id,
-          titel: lpDto.titel,
-          artiestNaam: lpDto.artiest
-      });
-        return updatedLp as ILp;
-    }
+      `,
+      {
+        id,
+        titel: lpDto.titel,
+        artiestNaam: lpDto.artiest,
+      }
+    );
+    return updatedLp as ILp;
+  }
 }

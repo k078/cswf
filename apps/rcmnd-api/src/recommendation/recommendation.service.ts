@@ -1,58 +1,63 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from '@cswf/shared/api';
-
+import { Recommendation } from '@cswf/shared/api';
 @Injectable()
 export class RecommendationService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async getLPsByGenre(genre: string, excludeId?: string) {
-    let query = `
+  async getLPsByGenre(
+    genre: string,
+    excludeId?: string
+  ): Promise<Recommendation[]> {
+    const query = `
       MATCH (similar:LP)-[:HAS_GENRE]->(g:Genre {name: $genre})
-    `;
-
-    if (excludeId) {
-      query += `
-        WHERE similar.id <> toInteger($excludeId)
-      `;
-    }
-
-    query += `
-      RETURN similar.id as id, similar.titel as titel, similar.artiest as artiest
-      LIMIT 5
-    `;
-
-    const params: any = { genre };
-    if (excludeId) {
-      params.excludeId = excludeId;
-    }
-
-    const result = await this.neo4jService.runQuery(query, params);
-
+      WHERE similar.id <> $excludeId
+      RETURN similar.id as id,
+             similar.titel as titel,
+             similar.artiest as artiest,
+             g.name as genre
+  `;
+    const result = await this.neo4jService.runQuery(query, {
+      genre,
+      excludeId,
+    });
     return (
       result?.map((record) => ({
         id: record.get('id'),
         titel: record.get('titel'),
         artiest: record.get('artiest'),
+        genre: record.get('genre'),
+        recommendationType: 'genre',
       })) || []
     );
   }
 
-  async getLPsByArtist(artiest: string, excludeId?: string) {
+  async getLPsByArtist(
+    artiest: string,
+    excludeId?: string
+  ): Promise<Recommendation[]> {
     const query = `
-        MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artiest})
-        ${excludeId ? 'WHERE similar.id <> toString($excludeId)' : ''}
-        RETURN similar.id as id,
-               similar.titel as titel,
-               a.name as artiest  // Voeg artiestnaam expliciet toe
-        LIMIT 5
-    `;
-    const result = await this.neo4jService.runQuery(query, { artiest, excludeId });
-    return result?.map(record => ({
+      MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artiest})
+      WHERE similar.id <> $excludeId
+      RETURN similar.id as id,
+             similar.titel as titel,
+             similar.artiest as artiest,
+             [(similar)-[:HAS_GENRE]->(g) | g.name][0] as genre
+  `;
+    const result = await this.neo4jService.runQuery(query, {
+      artiest,
+      excludeId,
+    });
+    return (
+      result?.map((record) => ({
         id: record.get('id'),
         titel: record.get('titel'),
-        artiest: record.get('artiest')
-    })) || [];
-}
+        artiest: record.get('artiest'),
+        genre: record.get('genre'),
+        recommendationType: 'artist', // Markeer als artiest-suggestie
+      })) || []
+    );
+  }
 
   async getAllArtistsFromNeo4j() {
     const query = `

@@ -9,4 +9,5 @@ export * from './lib/models/rol.enum';
 export * from './lib/models/gebruiker.interface';
 export * from './neo4j/neo4j.service';
 export * from './neo4j/neo4j.module';
+export * from './lib/models/recommendation.interface';
 
