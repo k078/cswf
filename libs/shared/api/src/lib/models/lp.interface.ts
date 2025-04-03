@@ -10,7 +10,7 @@ export interface ILp {
     id:Id;
     titel:string;
     artiest:string;
-    release:Date;
+    releaseJaar:number;
     land:string;
     label:string;
     genre:Genre;
@@ -18,6 +18,6 @@ export interface ILp {
     gebruikerId:number;
 }
 
-export type ICreateLp = Pick<ILp, 'titel' | 'artiest' | 'release' | 'land' | 'label' | 'genre' | 'img'>;
+export type ICreateLp = Pick<ILp, 'titel' | 'artiest' | 'releaseJaar' | 'land' | 'label' | 'genre' | 'img'>;
 export type IUpdateLp = Partial<Omit<ILp, 'id'>>;
 export type IUpsertLp=ILp;

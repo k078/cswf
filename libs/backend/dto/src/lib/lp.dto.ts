@@ -23,9 +23,9 @@ export class CreateLpDto implements ICreateLp {
   @IsNotEmpty()
   artiest!: string;
 
-  @IsDateString()
+  @IsNumber()
   @IsNotEmpty()
-  release!: Date;
+  releaseJaar!: number;
 
   @IsString()
   @IsNotEmpty()
@@ -57,9 +57,9 @@ export class UpdateLpDto implements IUpdateLp{
   @IsOptional()
   artiest?: string;
 
+  @IsNumber()
   @IsOptional()
-  @IsDate()
-  release?: Date;
+  releaseJaar?: number;
 
   @IsString()
   @IsOptional()
@@ -89,9 +89,9 @@ export class UpsertLpDto implements IUpsertLp{
   @IsNotEmpty()
   artiest!: string;
 
-  @IsDate()
+  @IsNumber()
   @IsNotEmpty()
-  release!: Date;
+  releaseJaar!: number;
 
   @IsString()
   @IsNotEmpty()

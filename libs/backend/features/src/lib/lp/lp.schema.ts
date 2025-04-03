@@ -17,8 +17,8 @@ export class Lp implements ILp {
   @Prop({ required: true })
   artiest!: string;
 
-  @Prop({ required: true, type: Date })
-  release!: Date;
+  @Prop({ required: true })
+  releaseJaar!: number;
 
   @Prop({ required: true })
   land!: string;

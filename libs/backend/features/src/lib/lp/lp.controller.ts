@@ -19,7 +19,7 @@ export class LpController {
 
     @Get(':id')
     @UseGuards(AuthGuard)
-    async getOne(@Param('id') id: number): Promise<ILp> {
+    async getOne(@Param('id') id: number): Promise<any> {
         const lp = await this.lpService.findOne(id);
         if (!lp) {
             throw new HttpException(

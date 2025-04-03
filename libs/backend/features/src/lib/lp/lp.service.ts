@@ -6,6 +6,8 @@ import { Model } from 'mongoose';
 import { CreateLpDto, UpdateLpDto } from '@cswf/backend/dto';
 import { Gebruiker } from '../gebruiker/gebruiker.schema';
 import { TokenBlacklistService } from '../gebruiker/blacklist.service';
+import { Neo4jService } from '@cswf/shared/api';
+import { RecommendationClientService } from '../rcmnd/rcmndClient.service';
 
 @Injectable()
 export class LpService {
@@ -14,7 +16,9 @@ export class LpService {
     constructor(
         @InjectModel(Lp.name) private readonly lpModel: Model<LpDocument>,
         @InjectModel(Gebruiker.name) private readonly gebruikerModel: Model<Gebruiker>,
-        private readonly tokenBlacklistService: TokenBlacklistService
+        private readonly tokenBlacklistService: TokenBlacklistService,
+        private readonly neo4jService: Neo4jService,
+        private readonly recommendationClientService: RecommendationClientService,
     ) {}
 
     private async getLowestId(): Promise<number> {
@@ -35,21 +39,21 @@ export class LpService {
         return lps as ILp[];
     }
 
-    async findOne(id: number): Promise<ILp | null> {
-        this.logger.log(`findOne called with id ${id}`);
-        const lp = await this.lpModel.findOne({id}).lean().exec();
-        if (!lp) {
-            this.logger.warn(`LP with id ${id} not found`);
-            return null;
-        }
-        this.logger.log(`Found LP with id ${id}`);
-        return lp as ILp;
+    async findOne(id: number) {
+      const lp = await this.lpModel.findOne({ id }).lean().exec();
+      if (!lp) return null;
+
+      const recommendations = await this.recommendationClientService.getRecommendationsByGenre(lp.genre, lp.id.toString());
+
+      return {
+        ...lp,
+        suggestions: recommendations,
+      };
     }
 
     async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {
         this.logger.log('create called');
 
-        // Haal de ingelogde gebruiker op
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
         if (!gebruiker) {
             throw new HttpException(
@@ -66,12 +70,24 @@ export class LpService {
         const lpData = {
             ...lpDto,
             id,
-            release: new Date(lpDto.release),
-            gebruikerId: gebruiker.id // Sla de gebruikerId op
+            gebruikerId: gebruiker.id
         };
         this.logger.debug(`Creating LP with data: ${JSON.stringify(lpData)}`);
 
         const createdLp = await this.lpModel.create(lpData);
+
+
+        await this.neo4jService.runQuery(`
+          MERGE (g:Genre {name: $genre})
+          MERGE (l:LP {id: $id, titel: $titel, artiest: $artiest})
+          MERGE (l)-[:HAS_GENRE]->(g)
+      `, {
+          id: lpData.id,
+          genre: lpData.genre,
+          titel: lpData.titel,
+          artiest: lpData.artiest,
+      });
+
         const plainObject = createdLp.toObject();
         this.logger.log(`Created LP with id ${plainObject.id}`);
         return plainObject as ILp;

@@ -16,7 +16,7 @@ export class VerzamelingService {
         @InjectModel(Verzameling.name) private readonly verzamelingModel: Model<VerzamelingDocument>,
         @InjectModel(Lp.name) private readonly lpModel: Model<Lp>,
         @InjectModel(Gebruiker.name) private readonly gebruikerModel: Model<Gebruiker>,
-        private readonly tokenBlacklistService: TokenBlacklistService
+        private readonly tokenBlacklistService: TokenBlacklistService,
     ) {}
 
     private async getLowestId(): Promise<number> {
