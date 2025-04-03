@@ -3,13 +3,30 @@ import { RecommendationService } from './recommendation.service';
 
 @Controller('recommendations')
 export class RecommendationController {
-  constructor(private readonly recommendationService: RecommendationService) {}
+  constructor(private readonly service: RecommendationService) {}
 
-@Get('genre/:genre')
-async getByGenre(
-  @Param('genre') genre: string,
-  @Query('excludeId') excludeId?: string
-) {
-  return this.recommendationService.getLPsByGenre(genre, excludeId);
+  @Get('genre/:genre')
+  async getByGenre(
+    @Param('genre') genre: string,
+    @Query('excludeId') excludeId?: string
+  ) {
+    return this.service.getLPsByGenre(genre, excludeId);
+  }
+
+  @Get('artist/:artist')
+  async getByArtist(
+    @Param('artist') artist: string,
+    @Query('excludeId') excludeId?: string
+  ) {
+    return this.service.getLPsByArtist(artist, excludeId);
+  }
+@Get('artists')
+async getAllArtists() {
+    return this.service.getAllArtistsFromNeo4j();
+}
+
+@Get('artist/:name')
+async getArtistByName(@Param('name') name: string) {
+    return this.service.getArtistDetails(name);
 }
 }

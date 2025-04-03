@@ -43,11 +43,14 @@ export class LpService {
       const lp = await this.lpModel.findOne({ id }).lean().exec();
       if (!lp) return null;
 
-      const recommendations = await this.recommendationClientService.getRecommendationsByGenre(lp.genre, lp.id.toString());
-
+      const [genreSuggestions, artistSuggestions] = await Promise.all([
+        this.recommendationClientService.getRecommendationsByGenre(lp.genre, lp.id.toString()),
+        this.recommendationClientService.getRecommendationsByArtist(lp.artiest, lp.id.toString())
+      ]);
       return {
         ...lp,
-        suggestions: recommendations,
+        genreSuggestions: genreSuggestions,
+        artistSuggestions: artistSuggestions
       };
     }
 
@@ -78,14 +81,16 @@ export class LpService {
 
 
         await this.neo4jService.runQuery(`
-          MERGE (g:Genre {name: $genre})
-          MERGE (l:LP {id: $id, titel: $titel, artiest: $artiest})
-          MERGE (l)-[:HAS_GENRE]->(g)
+          MERGE (a:Artist {name: $artiestNaam})
+          MERGE (l:LP {id: $id})
+          SET l.titel = $titel, l.artiest = $artiestNaam
+          MERGE (l)-[:HAS_GENRE]->(g:Genre {name: $genre})
+          MERGE (l)-[:HAS_ARTIST]->(a)
       `, {
           id: lpData.id,
-          genre: lpData.genre,
           titel: lpData.titel,
-          artiest: lpData.artiest,
+          artiestNaam: lpData.artiest,
+          genre: lpData.genre
       });
 
         const plainObject = createdLp.toObject();
@@ -96,7 +101,6 @@ export class LpService {
     async delete(id: number, gebruikerId: string): Promise<ILp | null> {
         this.logger.log(`delete called with id ${id}`);
 
-        // Haal de LP en gebruiker op
         const lp = await this.lpModel.findOne({id}).lean().exec();
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
 
@@ -105,7 +109,6 @@ export class LpService {
             return null;
         }
 
-        // Controleer of gebruiker admin is of eigenaar van de LP
         if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
             throw new HttpException(
                 {
@@ -123,13 +126,18 @@ export class LpService {
             return null;
         }
         this.logger.log(`Deleted LP with id ${id}`);
+
+        await this.neo4jService.runQuery(`
+          MATCH (l:LP {id: $id})
+          DETACH DELETE l
+        `, { id });
+
         return deletedLp as ILp;
     }
 
     async update(id: number, lpDto: UpdateLpDto, gebruikerId: string): Promise<ILp | null> {
         this.logger.log(`update called with id ${id}`);
 
-        // Haal de LP en gebruiker op
         const lp = await this.lpModel.findOne({id}).lean().exec();
         const gebruiker = await this.gebruikerModel.findOne({ id: gebruikerId }).lean().exec();
 
@@ -138,7 +146,6 @@ export class LpService {
             return null;
         }
 
-        // Controleer of gebruiker admin is of eigenaar van de LP
         if (gebruiker.rol !== 'ADMIN' && gebruiker.id !== lp.gebruikerId) {
             throw new HttpException(
                 {
@@ -162,6 +169,43 @@ export class LpService {
         }
 
         this.logger.log(`Updated LP with id ${id}`);
+
+        await this.neo4jService.runQuery(`
+          MATCH (l:LP {id: $id})
+          SET l.titel = $titel, l.artiest = $artiest
+          WITH l
+          OPTIONAL MATCH (l)-[r:HAS_GENRE]->()
+          DELETE r
+          WITH l
+          MERGE (g:Genre {name: $genre})
+          MERGE (l)-[:HAS_GENRE]->(g)
+          WITH l
+          OPTIONAL MATCH (l)-[r:HAS_ARTIST]->()
+          DELETE r
+          WITH l
+          MERGE (a:Artist {name: $artiest})
+          MERGE (l)-[:HAS_ARTIST]->(a)
+        `, {
+          id,
+          titel: lpDto.titel,
+          artiest: lpDto.artiest,
+          genre: lpDto.genre
+        });
+
+        await this.neo4jService.runQuery(`
+          MATCH (l:LP {id: $id})
+          SET l.titel = $titel, l.artiest = $artiestNaam
+          WITH l
+          OPTIONAL MATCH (l)-[r:HAS_ARTIST]->()
+          DELETE r
+          WITH l
+          MERGE (a:Artist {name: $artiestNaam})
+          MERGE (l)-[:HAS_ARTIST]->(a)
+      `, {
+          id,
+          titel: lpDto.titel,
+          artiestNaam: lpDto.artiest
+      });
         return updatedLp as ILp;
     }
 }
