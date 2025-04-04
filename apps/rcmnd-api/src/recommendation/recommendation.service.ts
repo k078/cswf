@@ -1,37 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { Neo4jService } from '@cswf/shared/api';
 import { Recommendation } from '@cswf/shared/api';
+
 @Injectable()
 export class RecommendationService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
-  async getLPsByArtistAndGenre(
+  async getRecommendations(
     artist: string,
     genre: string,
     excludeId?: string
   ): Promise<Recommendation[]> {
+    // Debug: Eerst controleren of de huidige LP bestaat in Neo4j
+    const currentLP = await this.neo4jService.runQuery(
+      'MATCH (l:LP {id: $id}) RETURN l',
+      { id: excludeId }
+    );
+    console.log('Current LP from Neo4j:', currentLP?.[0]?.get('l')?.properties);
+
     const query = `
-      MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artist}),
-            (similar)-[:HAS_GENRE]->(g:Genre {name: $genre})
-      WHERE similar.id <> $excludeId
-      RETURN similar.id as id,
-             similar.titel as titel,
-             similar.artiest as artiest,
-             g.name as genre
-      LIMIT 5
+MATCH (current:LP {id: $excludeId})
+
+MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artist}),
+      (similar)-[:HAS_GENRE]->(g:Genre {name: $genre})
+WHERE similar.id <> $excludeId
+RETURN similar.id as id,
+       similar.titel as titel,
+       similar.artiest as artiest,
+       g.name as genre,
+       toInteger(similar.releaseJaar) as releaseJaar
+ORDER BY similar.releaseJaar DESC
+LIMIT 5
     `;
+
+    console.log('Executing query:', query.replace(/\s+/g, ' '));
+
     const result = await this.neo4jService.runQuery(query, {
       artist,
       genre,
       excludeId,
     });
-    return result?.map((record) => ({
-      id: record.get('id'),
-      titel: record.get('titel'),
-      artiest: record.get('artiest'),
-      genre: record.get('genre'),
-      recommendationType: 'artistAndGenre',
-    })) || [];
+
+    console.log('Query results:', result);
+
+    return (
+      result?.map((record) => ({
+        id: record.get('id'),
+        titel: record.get('titel'),
+        artiest: record.get('artiest'),
+        genre: record.get('genre'),
+        releaseJaar: record.get('releaseJaar'),
+        recommendationType: 'artistAndGenre',
+      })) || []
+    );
   }
 
   async getLPsByGenre(
@@ -39,13 +60,18 @@ export class RecommendationService {
     excludeId?: string
   ): Promise<Recommendation[]> {
     const query = `
+      MATCH (current:LP {id: $excludeId})
       MATCH (similar:LP)-[:HAS_GENRE]->(g:Genre {name: $genre})
       WHERE similar.id <> $excludeId
+        AND similar.releaseJaar >= current.releaseJaar
       RETURN similar.id as id,
              similar.titel as titel,
              similar.artiest as artiest,
-             g.name as genre
-  `;
+             g.name as genre,
+             similar.releaseJaar as releaseJaar
+      ORDER BY similar.releaseJaar DESC
+      LIMIT 5
+    `;
     const result = await this.neo4jService.runQuery(query, {
       genre,
       excludeId,
@@ -56,6 +82,7 @@ export class RecommendationService {
         titel: record.get('titel'),
         artiest: record.get('artiest'),
         genre: record.get('genre'),
+        releaseJaar: record.get('releaseJaar'),
         recommendationType: 'genre',
       })) || []
     );
@@ -66,13 +93,18 @@ export class RecommendationService {
     excludeId?: string
   ): Promise<Recommendation[]> {
     const query = `
+      MATCH (current:LP {id: $excludeId})
       MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artiest})
       WHERE similar.id <> $excludeId
+        AND similar.releaseJaar >= current.releaseJaar
       RETURN similar.id as id,
              similar.titel as titel,
              similar.artiest as artiest,
-             [(similar)-[:HAS_GENRE]->(g) | g.name][0] as genre
-  `;
+             [(similar)-[:HAS_GENRE]->(g) | g.name][0] as genre,
+             similar.releaseJaar as releaseJaar
+      ORDER BY similar.releaseJaar DESC
+      LIMIT 3
+    `;
     const result = await this.neo4jService.runQuery(query, {
       artiest,
       excludeId,
@@ -83,7 +115,8 @@ export class RecommendationService {
         titel: record.get('titel'),
         artiest: record.get('artiest'),
         genre: record.get('genre'),
-        recommendationType: 'artist', // Markeer als artiest-suggestie
+        releaseJaar: record.get('releaseJaar'),
+        recommendationType: 'artist',
       })) || []
     );
   }

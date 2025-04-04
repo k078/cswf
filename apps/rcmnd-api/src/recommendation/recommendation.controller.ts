@@ -5,13 +5,13 @@ import { RecommendationService } from './recommendation.service';
 export class RecommendationController {
   constructor(private readonly service: RecommendationService) {}
 
-  @Get('artist-genre/:artist/:genre')
-  async getByArtistAndGenre(
+  @Get('recommend/:artist/:genre')
+  async getRecommendations(
     @Param('artist') artist: string,
     @Param('genre') genre: string,
     @Query('excludeId') excludeId?: string
   ) {
-    return this.service.getLPsByArtistAndGenre(artist, genre, excludeId);
+    return this.service.getRecommendations(artist, genre, excludeId);
   }
 
   @Get('genre/:genre')

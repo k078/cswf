@@ -23,6 +23,49 @@ export class LpService {
     private readonly recommendationClientService: RecommendationClientService
   ) {}
 
+  async syncAllLPs(): Promise<{synced: number}> {
+    const lps = await this.lpModel.find().lean().exec();
+    let syncedCount = 0;
+
+    for (const lp of lps) {
+      try {
+        const result = await this.neo4jService.runQuery(
+          `
+          MERGE (l:LP {id: $id})
+          SET l.titel = $titel,
+              l.artiest = $artiest,
+              l.genre = $genre,
+              l.releaseJaar = toInteger($releaseJaar),
+              l.land = $land,
+              l.label = $label
+          MERGE (a:Artist {name: $artiest})
+          MERGE (g:Genre {name: $genre})
+          MERGE (l)-[:HAS_ARTIST]->(a)
+          MERGE (l)-[:HAS_GENRE]->(g)
+          RETURN l.id
+          `,
+          {
+            id: lp.id.toString(),
+            titel: lp.titel,
+            artiest: lp.artiest,
+            genre: lp.genre,
+            releaseJaar: lp.releaseJaar,
+            land: lp.land,
+            label: lp.label
+          }
+        );
+
+        if (result?.length) syncedCount++;
+      } catch (error) {
+        console.error(`Error syncing LP ${lp.id}:`, error);
+      }
+    }
+
+    console.log(`Synced ${syncedCount}/${lps.length} LPs to Neo4j`);
+    return { synced: syncedCount };
+  }
+
+
   private async getLowestId(): Promise<number> {
     this.logger.log('getLowestId called');
     const usedIds = (await this.lpModel.distinct('id').exec()) as number[];
@@ -36,6 +79,15 @@ export class LpService {
 
   async findAll(): Promise<ILp[]> {
     this.logger.log('findAll called');
+
+    const syncResult = await this.syncAllLPs();
+    this.logger.log(`Sync result: ${syncResult.synced} LPs synced`);
+
+    const neo4jLps = await this.neo4jService.runQuery(
+      'MATCH (l:LP) RETURN l.id, l.releaseJaar LIMIT 10'
+    );
+    console.log('Neo4j LP samples:', neo4jLps);
+
     const lps = await this.lpModel.find().lean().exec();
     this.logger.log(`Found ${lps.length} LPs`);
     return lps as ILp[];
@@ -46,21 +98,24 @@ export class LpService {
     if (!lp) return null;
 
     try {
-      const artistGenreRecommendations = await this.recommendationClientService.getRecommendationsByArtistAndGenre(
+      const recommendations = await this.recommendationClientService.getRecommendations(
         lp.artiest,
         lp.genre,
         lp.id.toString()
       );
 
-      console.log('Raw recommendations:', artistGenreRecommendations);
+      console.log('Raw recommendations:', recommendations);
 
-      const suggestions = artistGenreRecommendations
-      .filter((suggestion: Recommendation) => suggestion && +suggestion.id !== +lp.id)
-      .slice(0, 5);
+      //const suggestions = recommendations
+      //  .filter(
+      //    (suggestion: Recommendation) =>
+      //      suggestion && +suggestion.id !== +lp.id
+      //  )
+      //  .slice(0, 5);
 
       const result = {
         ...lp,
-        suggestions: suggestions,
+        suggestions: recommendations,
       };
 
       console.log('Final result:', result);
@@ -69,7 +124,7 @@ export class LpService {
       console.error('Error:', error);
       return {
         ...lp,
-        suggestions: []
+        suggestions: [],
       };
     }
   }
@@ -104,17 +159,20 @@ export class LpService {
 
     await this.neo4jService.runQuery(
       `
-          MERGE (a:Artist {name: $artiestNaam})
-          MERGE (l:LP {id: $id})
-          SET l.titel = $titel, l.artiest = $artiestNaam
-          MERGE (l)-[:HAS_GENRE]->(g:Genre {name: $genre})
-          MERGE (l)-[:HAS_ARTIST]->(a)
+        MERGE (a:Artist {name: $artiest})
+        MERGE (l:LP {id: $id})
+        SET l.titel = $titel,
+            l.artiest = $artiest,
+            l.releaseJaar = $releaseJaar
+        MERGE (l)-[:HAS_ARTIST]->(a)
+        MERGE (l)-[:HAS_GENRE]->(g:Genre {name: $genre})
       `,
       {
-        id: lpData.id,
-        titel: lpData.titel,
-        artiestNaam: lpData.artiest,
-        genre: lpData.genre,
+        id: createdLp.id,
+        titel: createdLp.titel,
+        artiest: createdLp.artiest,
+        genre: createdLp.genre,
+        releaseJaar: createdLp.releaseJaar
       }
     );
 

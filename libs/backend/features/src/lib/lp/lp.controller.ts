@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req, UseInterceptors, NotFoundException } from '@nestjs/common';
 import { LpService } from './lp.service';
-import { ILp } from '@cswf/shared/api';
+import { ILp, Neo4jService } from '@cswf/shared/api';
 import { CreateLpDto, UpdateLpDto } from '@cswf/backend/dto';
 import { AuthGuard } from '../auth/authguard';
 import { CustomRequest } from '../auth/custom-request.interface';
@@ -9,8 +9,17 @@ import { LoggingInterceptor } from '../auth/loggingInterceptor';
 @UseInterceptors(LoggingInterceptor)
 @Controller('lp')
 export class LpController {
-    constructor(private readonly lpService: LpService) {}
+    constructor(private readonly lpService: LpService,
+      private readonly neo4jService: Neo4jService,
+    ) {}
 
+    @Get('debug/neo4j-lps')
+    async debugNeo4jLps() {
+      const result = await this.neo4jService.runQuery(
+        'MATCH (l:LP) RETURN l.id, l.titel, l.releaseJaar LIMIT 20'
+      );
+      return result?.map(r => r.toObject()) || [];
+    }
     @Get('')
     @UseGuards(AuthGuard)
     async getAll(): Promise<ILp[]> {
