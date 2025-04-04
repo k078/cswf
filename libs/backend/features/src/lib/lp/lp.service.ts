@@ -8,6 +8,7 @@ import { Gebruiker } from '../gebruiker/gebruiker.schema';
 import { TokenBlacklistService } from '../gebruiker/blacklist.service';
 import { Neo4jService } from '@cswf/shared/api';
 import { RecommendationClientService } from '../rcmnd/rcmndClient.service';
+import { Recommendation } from '@cswf/shared/api';
 
 @Injectable()
 export class LpService {
@@ -44,27 +45,33 @@ export class LpService {
     const lp = await this.lpModel.findOne({ id }).lean().exec();
     if (!lp) return null;
 
-    const [genreRecommendations, artistRecommendations] = await Promise.all([
-      this.recommendationClientService.getRecommendationsByGenre(
+    try {
+      const artistGenreRecommendations = await this.recommendationClientService.getRecommendationsByArtistAndGenre(
+        lp.artiest,
         lp.genre,
         lp.id.toString()
-      ),
-      this.recommendationClientService.getRecommendationsByArtist(
-        lp.artiest,
-        lp.id.toString()
-      ),
-    ]);
+      );
 
-    const allSuggestions = [...artistRecommendations, ...genreRecommendations]
-    .filter(suggestion => suggestion.id !== lp.id);
-    const uniqueSuggestions = [
-      ...new Map(allSuggestions.map((item) => [item.id, item])).values(),
-    ];
+      console.log('Raw recommendations:', artistGenreRecommendations);
 
-    return {
-      ...lp,
-      suggestions: uniqueSuggestions.slice(0, 5),
-    };
+      const suggestions = artistGenreRecommendations
+      .filter((suggestion: Recommendation) => suggestion && +suggestion.id !== +lp.id)
+      .slice(0, 5);
+
+      const result = {
+        ...lp,
+        suggestions: suggestions,
+      };
+
+      console.log('Final result:', result);
+      return result;
+    } catch (error) {
+      console.error('Error:', error);
+      return {
+        ...lp,
+        suggestions: []
+      };
+    }
   }
 
   async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {

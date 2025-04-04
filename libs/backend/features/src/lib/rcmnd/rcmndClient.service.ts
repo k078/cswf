@@ -6,6 +6,16 @@ import { firstValueFrom } from 'rxjs';
 export class RecommendationClientService {
   constructor(private readonly httpService: HttpService) {}
 
+  async getRecommendationsByArtistAndGenre(
+    artist: string,
+    genre: string,
+    excludeId?: string
+  ) {
+    const url = `http://localhost:3100/api/recommendations/artist-genre/${artist}/${genre}?excludeId=${excludeId}`;
+    const response = await firstValueFrom(this.httpService.get(url));
+    return response.data;
+  }
+
   async getRecommendationsByGenre(genre: string, excludeId?: string) {
     const url = `http://localhost:3100/api/recommendations/genre/${genre}?excludeId=${excludeId}`;
     const response = await firstValueFrom(this.httpService.get(url));
@@ -18,4 +28,3 @@ export class RecommendationClientService {
     return response.data;
   }
 }
-

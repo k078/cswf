@@ -5,6 +5,15 @@ import { RecommendationService } from './recommendation.service';
 export class RecommendationController {
   constructor(private readonly service: RecommendationService) {}
 
+  @Get('artist-genre/:artist/:genre')
+  async getByArtistAndGenre(
+    @Param('artist') artist: string,
+    @Param('genre') genre: string,
+    @Query('excludeId') excludeId?: string
+  ) {
+    return this.service.getLPsByArtistAndGenre(artist, genre, excludeId);
+  }
+
   @Get('genre/:genre')
   async getByGenre(
     @Param('genre') genre: string,
@@ -20,13 +29,13 @@ export class RecommendationController {
   ) {
     return this.service.getLPsByArtist(artist, excludeId);
   }
-@Get('artists')
-async getAllArtists() {
+  @Get('artists')
+  async getAllArtists() {
     return this.service.getAllArtistsFromNeo4j();
-}
+  }
 
-@Get('artist/:name')
-async getArtistByName(@Param('name') name: string) {
+  @Get('artist/:name')
+  async getArtistByName(@Param('name') name: string) {
     return this.service.getArtistDetails(name);
-}
+  }
 }

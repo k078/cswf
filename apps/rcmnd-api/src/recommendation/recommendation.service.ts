@@ -5,6 +5,35 @@ import { Recommendation } from '@cswf/shared/api';
 export class RecommendationService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
+  async getLPsByArtistAndGenre(
+    artist: string,
+    genre: string,
+    excludeId?: string
+  ): Promise<Recommendation[]> {
+    const query = `
+      MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artist}),
+            (similar)-[:HAS_GENRE]->(g:Genre {name: $genre})
+      WHERE similar.id <> $excludeId
+      RETURN similar.id as id,
+             similar.titel as titel,
+             similar.artiest as artiest,
+             g.name as genre
+      LIMIT 5
+    `;
+    const result = await this.neo4jService.runQuery(query, {
+      artist,
+      genre,
+      excludeId,
+    });
+    return result?.map((record) => ({
+      id: record.get('id'),
+      titel: record.get('titel'),
+      artiest: record.get('artiest'),
+      genre: record.get('genre'),
+      recommendationType: 'artistAndGenre',
+    })) || [];
+  }
+
   async getLPsByGenre(
     genre: string,
     excludeId?: string

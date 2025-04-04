@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, HttpException, HttpStatus, UseGuards, Req, UseInterceptors, NotFoundException } from '@nestjs/common';
 import { LpService } from './lp.service';
 import { ILp } from '@cswf/shared/api';
 import { CreateLpDto, UpdateLpDto } from '@cswf/backend/dto';
@@ -19,19 +19,19 @@ export class LpController {
 
     @Get(':id')
     @UseGuards(AuthGuard)
-    async getOne(@Param('id') id: number): Promise<any> {
-        const lp = await this.lpService.findOne(id);
-        if (!lp) {
-            throw new HttpException(
-                {
-                    status: HttpStatus.NOT_FOUND,
-                    error: 'Not Found',
-                    message: `LP with id ${id} not found`
-                },
-                HttpStatus.NOT_FOUND
-            );
+    async findOne(@Param('id') id: string) {
+      const lp = await this.lpService.findOne(+id);
+      if (!lp) {
+        throw new NotFoundException('LP not found');
+      }
+      return {
+        results: lp,
+        info: {
+          version: '1.0',
+          type: 'object',
+          count: 1
         }
-        return lp;
+      };
     }
 
     @Post('')

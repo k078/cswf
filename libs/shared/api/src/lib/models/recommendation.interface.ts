@@ -3,5 +3,5 @@ export interface Recommendation {
   titel: string;
   artiest: string;
   genre?: string;  // Optioneel voor bestaande code
-  recommendationType: 'genre' | 'artist';  // Nieuw veld
+  recommendationType: 'genre' | 'artist' | 'artistAndGenre';  // Nieuw veld
 }
