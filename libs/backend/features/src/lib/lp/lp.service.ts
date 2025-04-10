@@ -44,34 +44,23 @@ export class LpService {
   async findOne(id: number) {
     const lp = await this.lpModel.findOne({ id }).lean().exec();
     if (!lp) return null;
-
-    try {
-      const artistGenreRecommendations = await this.recommendationClientService.getRecommendationsByArtistAndGenre(
+      let recommendations = await this.recommendationClientService.getRecommendationsByArtistAndGenreAndReleasejaar(
         lp.artiest,
         lp.genre,
+        lp.releaseJaar.toString(),
         lp.id.toString()
       );
 
-      console.log('Raw recommendations:', artistGenreRecommendations);
+      console.log('Raw recommendations:', recommendations);
+      recommendations = recommendations.filter(
+        (rec: Recommendation) => rec.id !== lp.id
+      );
+      console.log('Filtered recommendations:', recommendations);
 
-      const suggestions = artistGenreRecommendations
-      .filter((suggestion: Recommendation) => suggestion && +suggestion.id !== +lp.id)
-      .slice(0, 5);
-
-      const result = {
-        ...lp,
-        suggestions: suggestions,
-      };
-
-      console.log('Final result:', result);
-      return result;
-    } catch (error) {
-      console.error('Error:', error);
       return {
         ...lp,
-        suggestions: []
+        recommendations: recommendations
       };
-    }
   }
 
   async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {
@@ -106,7 +95,7 @@ export class LpService {
       `
           MERGE (a:Artist {name: $artiestNaam})
           MERGE (l:LP {id: $id})
-          SET l.titel = $titel, l.artiest = $artiestNaam
+          SET l.titel = $titel, l.artiest = $artiestNaam, l.releaseJaar = $releaseJaar
           MERGE (l)-[:HAS_GENRE]->(g:Genre {name: $genre})
           MERGE (l)-[:HAS_ARTIST]->(a)
       `,
@@ -115,6 +104,7 @@ export class LpService {
         titel: lpData.titel,
         artiestNaam: lpData.artiest,
         genre: lpData.genre,
+        releaseJaar: lpData.releaseJaar,
       }
     );
 

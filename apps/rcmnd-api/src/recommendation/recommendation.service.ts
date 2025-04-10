@@ -5,6 +5,51 @@ import { Recommendation } from '@cswf/shared/api';
 export class RecommendationService {
   constructor(private readonly neo4jService: Neo4jService) {}
 
+  async getLPsByArtistAndGenreAndReleasejaar(
+    artist: string,
+    genre: string,
+    releaseJaar: string,
+    excludeId?: string
+  ) {
+    const nummericReleasejaar = parseFloat(releaseJaar);
+    let query = `
+      MATCH (similar:LP)-[:HAS_ARTIST]->(a:Artist {name: $artist})
+      MATCH (similar)-[:HAS_GENRE]->(g:Genre {name: $genre})
+      WHERE similar.releaseJaar <= $releaseJaar + 1 AND similar.releaseJaar >= $releaseJaar - 1
+      `;
+    if (excludeId) {
+      query += `AND similar.id <> $excludeId`;
+    }
+    query += `
+      RETURN similar.id as id,
+             similar.titel as titel,
+             similar.artiest as artiest,
+             g.name as genre,
+             similar.releaseJaar as releaseJaar
+      LIMIT 5
+    `;
+
+    const params: any = {
+      artist,
+      genre,
+      releaseJaar: nummericReleasejaar,
+    };
+    if (excludeId) {
+      params.excludeId = excludeId;
+    }
+
+    const result = await this.neo4jService.runQuery(query, params);
+    return result?.map(record => ({
+        id: record.get('id'),
+        titel: record.get('titel'),
+        artiest: record.get('artiest'),
+        genre: record.get('genre'),
+        releaseJaar: record.get('releaseJaar'),
+        recommendationType: 'artistAndGenreAndReleasejaar',
+      })) || []
+    ;
+  }
+
   async getLPsByArtistAndGenre(
     artist: string,
     genre: string,
@@ -25,13 +70,15 @@ export class RecommendationService {
       genre,
       excludeId,
     });
-    return result?.map((record) => ({
-      id: record.get('id'),
-      titel: record.get('titel'),
-      artiest: record.get('artiest'),
-      genre: record.get('genre'),
-      recommendationType: 'artistAndGenre',
-    })) || [];
+    return (
+      result?.map((record) => ({
+        id: record.get('id'),
+        titel: record.get('titel'),
+        artiest: record.get('artiest'),
+        genre: record.get('genre'),
+        recommendationType: 'artistAndGenre',
+      })) || []
+    );
   }
 
   async getLPsByGenre(
