@@ -44,23 +44,24 @@ export class LpService {
   async findOne(id: number) {
     const lp = await this.lpModel.findOne({ id }).lean().exec();
     if (!lp) return null;
-      let recommendations = await this.recommendationClientService.getRecommendationsByArtistAndGenreAndReleasejaar(
+    let recommendations =
+      await this.recommendationClientService.getRecommendationsByArtistAndGenreAndReleasejaar(
         lp.artiest,
         lp.genre,
         lp.releaseJaar.toString(),
         lp.id.toString()
       );
 
-      console.log('Raw recommendations:', recommendations);
-      recommendations = recommendations.filter(
-        (rec: Recommendation) => rec.id !== lp.id
-      );
-      console.log('Filtered recommendations:', recommendations);
+    console.log('Raw recommendations:', recommendations);
+    recommendations = recommendations.filter(
+      (rec: Recommendation) => rec.id !== lp.id
+    );
+    console.log('Filtered recommendations:', recommendations);
 
-      return {
-        ...lp,
-        recommendations: recommendations
-      };
+    return {
+      ...lp,
+      recommendations: recommendations,
+    };
   }
 
   async create(lpDto: CreateLpDto, gebruikerId: string): Promise<ILp> {
@@ -138,22 +139,59 @@ export class LpService {
       );
     }
 
-    const deletedLp = await this.lpModel.findOneAndDelete({ id }).lean().exec();
-    if (!deletedLp) {
-      this.logger.warn(`LP with id ${id} not found for deletion`);
-      return null;
-    }
-    this.logger.log(`Deleted LP with id ${id}`);
+    let deletedLp: ILp | null = null;
+    try {
+      const neoResult = await this.neo4jService.runQuery(
+        `MATCH (l:LP {id: $id}) DETACH DELETE l RETURN l`,
+        { id }
+      );
+      if (!neoResult || neoResult.length === 0) {
+        this.logger.warn(`LP with id ${id} not found in Neo4j`);
+        throw new Error(
+          `LP with id ${id} not found in Neo4j, deletion failed`
+        );
+      }
+      deletedLp = await this.lpModel.findOne({ id }).lean().exec();
+      if (!deletedLp) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: 'Not Found',
+            message: 'LP not found for deletion',
+          },
+          HttpStatus.NOT_FOUND
+        );
+      }
 
-    await this.neo4jService.runQuery(
-      `
-          MATCH (l:LP {id: $id})
-          DETACH DELETE l
-        `,
-      { id }
-    );
+      await this.neo4jService.runQuery(
+        `MATCH (l:LP {id: $id}) DETACH DELETE l`,
+        { id }
+      );
 
-    return deletedLp as ILp;
+      this.logger.log(`Deleted LP with id ${id} from Neo4j and MongoDB`);
+      return deletedLp as ILp;
+
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+          this.logger.error(`Error deleting Pokémon from MongoDB or Neo4j: ${error.message}`);
+      } else {
+          this.logger.error('Unknown error occurred while deleting Pokémon');
+      }
+
+      if (deletedLp) {
+          await this.lpModel.create(deletedLp);
+          this.logger.log(`Rolled back deletion of LP with id ${id}`);
+      }
+
+      throw new HttpException(
+          {
+              status: HttpStatus.INTERNAL_SERVER_ERROR,
+              error: 'Internal Server Error',
+              message: `Error while deleting Pokémon. Transaction rolled back.`,
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR
+      );
+  }
   }
 
   async update(
@@ -199,45 +237,22 @@ export class LpService {
     await this.neo4jService.runQuery(
       `
           MATCH (l:LP {id: $id})
-          SET l.titel = $titel, l.artiest = $artiest
+          SET l.titel = $titel, l.artiest = $artiestNaam, l.releaseJaar = $releaseJaar
           WITH l
           OPTIONAL MATCH (l)-[r:HAS_GENRE]->()
           DELETE r
-          WITH l
           MERGE (g:Genre {name: $genre})
           MERGE (l)-[:HAS_GENRE]->(g)
-          WITH l
-          OPTIONAL MATCH (l)-[r:HAS_ARTIST]->()
-          DELETE r
-          WITH l
-          MERGE (a:Artist {name: $artiest})
-          MERGE (l)-[:HAS_ARTIST]->(a)
-        `,
+      `,
       {
         id,
         titel: lpDto.titel,
         artiest: lpDto.artiest,
         genre: lpDto.genre,
+        releaseJaar: lpDto.releaseJaar,
       }
     );
 
-    await this.neo4jService.runQuery(
-      `
-          MATCH (l:LP {id: $id})
-          SET l.titel = $titel, l.artiest = $artiestNaam
-          WITH l
-          OPTIONAL MATCH (l)-[r:HAS_ARTIST]->()
-          DELETE r
-          WITH l
-          MERGE (a:Artist {name: $artiestNaam})
-          MERGE (l)-[:HAS_ARTIST]->(a)
-      `,
-      {
-        id,
-        titel: lpDto.titel,
-        artiestNaam: lpDto.artiest,
-      }
-    );
     return updatedLp as ILp;
   }
 }
